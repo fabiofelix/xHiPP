@@ -1,0 +1,151 @@
+[
+   {  
+   "name":"root",
+   "isRoot":true,
+   "isLeave":false,
+   "center":[6.0222, 3.1333, 3.9111, 1.2778],
+   "qt_instances":9,
+   "medoid_name": "",
+   "summary": "",
+   "colnames": ["Sepal.Length", "Sepal.Width", "Petal.Length", "Petal.Width "],
+   "children":[
+      {
+         "name":"",
+         "group":"",
+         "isRoot":false,
+         "isLeave":false,
+         "center":[4.9, 3.2333, 1.3667, 0.2],
+         "qt_instances":3,
+         "topics": ["A", "B", "C"],
+         "medoid_name": "",
+         "summary": "",
+         "children":[
+            {
+               "name":"item_3",
+               "group":"setosa",
+               "isRoot":false,
+               "isLeave":true,
+               "data":[5.1, 3.5, 1.4, 0.2],
+               "topics": ["A"]
+            },
+            {
+               "name":"item_4", 
+               "group":"setosa",
+               "isRoot":false,
+               "isLeave":true,
+               "data":[4.7, 3.2, 1.3, 0.2],
+               "topics": ["B"]
+            },
+            {
+               "name":"item_6",
+               "group":"setosa",
+               "isRoot":false,
+               "isLeave":true,
+               "data":[4.9, 3, 1.4, 0.2],
+               "topics": ["C"]
+            }
+         ]
+      },
+      {
+         "name":"",
+         "group":"",
+         "isRoot":false,
+         "isLeave":false,
+         "center":[6.525, 3.05, 4.8, 1.575],
+         "qt_instances":4,
+         "topics": ["D", "E", "F", "G"],  
+         "medoid_name": "",
+         "summary": "",
+         "children":[
+            {
+               "name":"",
+               "group":"",
+               "isRoot":false,
+               "isLeave":false,
+               "center":[5.8, 2.7, 5.1, 1.9],
+               "qt_instances":1,
+               "topics": ["D"],  
+               "medoid_name": "",
+               "summary": "",
+               "children":[
+                  {
+                     "name":"item_7",
+                     "group":"virginica",
+                     "isRoot":false,
+                     "isLeave":true,
+                     "data":[5.8, 2.7, 5.1, 1.9],
+                     "topics": ["D"]                              
+                  }
+               ]
+            },
+            {
+               "name":"",
+               "group":"",
+               "isRoot":false,
+               "isLeave":false,
+               "center":[6.7667, 3.1667, 4.7, 1.4667],
+               "qt_instances":3,
+               "topics": ["E", "F", "G"], 
+               "medoid_name": "",
+               "summary": "",
+               "children":[
+                  {
+                     "name":"item_5",
+                     "group":"versicolor",
+                     "isRoot":false,
+                     "isLeave":true,
+                     "data":[6.9, 3.1, 4.9, 1.5],
+                     "topics": ["E"]
+                  },
+                  {
+                     "name":"item_8",
+                     "group":"versicolor",
+                     "isRoot":false,
+                     "isLeave":true,
+                     "data":[6.4, 3.2, 4.5, 1.5],
+                     "topics": ["F"]                              
+                  },
+                  {
+                     "name":"item_9",
+                     "group":"versicolor",
+                     "isRoot":false,
+                     "isLeave":true,
+                     "data":[7, 3.2, 4.7, 1.4],
+                     "topics": ["G"]
+                  }
+               ]
+            }
+         ]
+      },
+      {
+         "name":"",
+         "group":"",
+         "isRoot":false,
+         "isLeave":false,
+         "center":[6.7, 3.15, 5.95, 2.3],
+         "qt_instances":2,
+         "topics": ["H", "I"], 
+         "medoid_name": "",
+         "summary": "",
+         "children":[
+            {
+               "name":"item_1",
+               "group":"virginica",
+               "isRoot":false,
+               "isLeave":true,
+               "data":[6.3,  3.3, 6, 2.5],
+               "topics": ["H"]         
+            },
+            {
+               "name":"item_2",
+               "group":"virginica",
+               "isRoot":false,
+               "isLeave":true,
+               "data":[7.1, 3, 5.9, 2.1],
+               "topics": ["I"]
+            }
+         ]
+      }
+   ]
+  }
+]

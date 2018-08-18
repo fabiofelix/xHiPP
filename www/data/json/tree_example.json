@@ -1,0 +1,231 @@
+[
+   {  
+   "name":"root",
+   "isRoot":true,
+   "isLeave":false,
+   "center":[6.0222, 3.1333, 3.9111, 1.2778],
+   "r":3.1197,
+   "qt_instances":9,
+   "qt_min":3,
+   "seed_value":1035,
+   "order": "cluster_projection",
+   "cluster_algorithm": "kmeans",
+   "projection_algorithm": "lsp",
+   "qt_cluster": 3,
+   "threshold": 0.4,
+   "frac": 3,
+   "max_iteration": 21,
+   "medoid_name": "",
+   "summary": "",
+   "colnames": ["Sepal.Length", "Sepal.Width", "Petal.Length", "Petal.Width "],
+   "children":[
+      {
+         "name":"",
+         "group":"",
+         "isRoot":false,
+         "isLeave":false,
+         "center":[4.9, 3.2333, 1.3667, 0.2],
+         "r":0.6004,
+         "x":-3.1197,
+         "y":3.1197,
+         "qt_instances":3,         
+         "parent_instances":9,
+         "parent_r":3.1197,
+         "topics": ["A", "B", "C"],
+         "medoid_name": "",
+         "summary": "",
+         "children":[
+            {
+               "name":"item_3",
+               "group":"setosa",
+               "isRoot":false,
+               "isLeave":true,
+               "data":[5.1, 3.5, 1.4, 0.2],
+               "r":10,
+               "x":-2.5193,
+               "y":2.6589,
+               "row_index":3,
+               "parent_instances":0,
+               "topics": ["A"]
+            },
+            {
+               "name":"item_4", 
+               "group":"setosa",
+               "isRoot":false,
+               "isLeave":true,
+               "data":[4.7, 3.2, 1.3, 0.2],
+               "r":10,
+               "x":-3.5101,
+               "y":3.72,
+               "row_index":4,
+               "parent_instances":0,
+               "topics": ["B"]
+            },
+            {
+               "name":"item_6",
+               "group":"setosa",
+               "isRoot":false,
+               "isLeave":true,
+               "data":[4.9, 3, 1.4, 0.2],
+               "r":10,
+               "x":-3.72,
+               "y":2.5193,
+               "row_index":6,
+               "parent_instances":0,
+               "topics": ["C"]
+            }
+         ]
+      },
+      {
+         "name":"",
+         "group":"",
+         "isRoot":false,
+         "isLeave":false,
+         "center":[6.525, 3.05, 4.8, 1.575],
+         "r":1.7538,
+         "x":1.3719,
+         "y":-1.3089,
+         "qt_instances":4,
+         "parent_instances":9,
+         "parent_r":3.1197,
+         "topics": ["D", "E", "F", "G"],
+         "medoid_name": "",
+         "summary": "",
+         "children":[
+            {
+               "name":"",
+               "group":"",
+               "isRoot":false,
+               "isLeave":false,
+               "center":[5.8, 2.7, 5.1, 1.9],
+               "r":0.4385,
+               "x":3.1257,
+               "y":0.4449,
+               "qt_instances":1,
+               "parent_instances":4,
+               "parent_r":1.7538,   
+               "topics": ["D"],
+               "medoid_name": "",
+               "summary": "",
+               "children":[
+                  {
+                     "name":"item_7",
+                     "group":"virginica",
+                     "isRoot":false,
+                     "isLeave":true,
+                     "data":[5.8, 2.7, 5.1, 1.9],
+                     "r":10,
+                     "x":2.6872,
+                     "y":0.0065,
+                     "row_index":7,
+                     "parent_instances":0,
+                     "topics": ["D"]
+                  }
+               ]
+            },
+            {
+               "name":"",
+               "group":"",
+               "isRoot":false,
+               "isLeave":false,
+               "center":[6.7667, 3.1667, 4.7, 1.4667],
+               "r":0.7594,
+               "x":-0.3819,
+               "y":-3.0627,
+               "qt_instances":3,
+               "parent_instances":4,
+               "parent_r":1.7538,
+               "topics": ["E", "F", "G"],
+               "medoid_name": "",
+               "summary": "",
+               "children":[
+                  {
+                     "name":"item_5",
+                     "group":"versicolor",
+                     "isRoot":false,
+                     "isLeave":true,
+                     "data":[6.9, 3.1, 4.9, 1.5],
+                     "r":10,
+                     "x":-1.1414,
+                     "y":-3.4146,
+                     "row_index":5,
+                     "parent_instances":0,
+                     "topics": ["E"]
+                  },
+                  {
+                     "name":"item_8",
+                     "group":"versicolor",
+                     "isRoot":false,
+                     "isLeave":true,
+                     "data":[6.4, 3.2, 4.5, 1.5],
+                     "r":10,
+                     "x":0.3775,
+                     "y":-2.3033,
+                     "row_index":8,
+                     "parent_instances":0,
+                     "topics": ["F"]                    
+                  },
+                  {
+                     "name":"item_9",
+                     "group":"versicolor",
+                     "isRoot":false,
+                     "isLeave":true,
+                     "data":[7, 3.2, 4.7, 1.4],
+                     "r":10,
+                     "x":-0.4785,
+                     "y":-3.8221,
+                     "row_index":9,
+                     "parent_instances":0,
+                     "topics": ["G"]                     
+                  }
+               ]
+            }
+         ]
+      },
+      {
+         "name":"",
+         "group":"",
+         "isRoot":false,
+         "isLeave":false,
+         "center":[6.7, 3.15, 5.95, 2.3],
+         "r":0.4902,
+         "x":3.2775,
+         "y":-3.2832,
+         "qt_instances":2,
+         "parent_instances":9,
+         "parent_r":3.1197,
+         "topics": ["H", "I"],
+         "medoid_name": "",
+         "summary": "",
+         "children":[
+            {
+               "name":"item_1",
+               "group":"virginica",
+               "isRoot":false,
+               "isLeave":true,
+               "data":[6.3,  3.3, 6, 2.5],
+               "r":10,
+               "x":2.7873,
+               "y":-2.793,
+               "row_index":1,
+               "parent_instances":0,
+               "topics": ["H"]
+            },
+            {
+               "name":"item_2",
+               "group":"virginica",
+               "isRoot":false,
+               "isLeave":true,
+               "data":[7.1, 3, 5.9, 2.1],
+               "r":10,
+               "x":3.7677,
+               "y":-3.7734,
+               "row_index":2,
+               "parent_instances":0,
+               "topics": ["I"]               
+            }
+         ]
+      }
+   ]
+  }
+]

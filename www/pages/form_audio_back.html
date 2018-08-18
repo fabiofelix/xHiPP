@@ -1,0 +1,26 @@
+<div class="modal-dialog" role="document">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 id="div_audio_title" class="modal-title"></h3>
+    </div>
+    <div class="modal-body">
+    
+       <div class="row">
+          <img id="audio_spec" src="{audio_spec}" alt='' height='100%' width='100%' />
+       </div>
+    
+       <div class="row">
+          <div class='col-lg-12'>
+            <audio controls id="audio_sound" style="width: 100%">
+              <source  src="{audio_link}" type='audio/{audio_type}'>
+              Your browser does not support the audio element.
+            </audio>
+          </div>
+       </div>    
+      
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+    </div>
+  </div>
+</div> 

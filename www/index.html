@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>  
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    
+    <link rel="stylesheet" href="js/shared2/bootstrap-3.3.7-dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="js/shared2/fancyBox/source/jquery.fancybox.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="js/shared2/fileinput/fileinput.css">  
+    <link rel="stylesheet" href="js/shared2/bgrins-spectrum-98454b5/spectrum.css">
+    <link rel="stylesheet" href="shared/shiny.css" />
+    <link rel="stylesheet" href="css/hipp.css" type="text/css" />
+    
+    <link rel="stylesheet" href="dist/css/sb-admin-2.min.css" type="text/css" />
+    <link rel="stylesheet" href="vendor/font-awesome/css/font-awesome.min.css" type="text/css" />
+    
+    <title>eXtended Hierarchical Point Placement Strategy (xHiPP)</title>
+  </head> 
+  <body>   
+    <input id="POG" type="text" hidden/>
+    <input id="text_path" type="text" hidden/>
+    <input id="order" type="text" hidden/>
+    <input id="cluster_algorithm" type="text" hidden/>
+    <input id="projection_algorithm" type="text" hidden/>      
+  
+<!--   Helvetica,Arial,sans-serif 12px -->
+    
+
+    <div class="container header">
+    
+      <div class="row adjust-row">
+        <div class="col-xs-3 adjust-firt-column">             
+          <input id="userFile" type="file" multiple class="file-loading" placeholder="Description" />
+        </div>   
+       
+        <div class="col-xs-2 adjust-column">       
+          <div class="dropdown">
+            <button id="order_button" class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">Clustering -> Projection<span class="caret"></span></button>
+            <ul class="dropdown-menu">
+              <li><a id="cluster_projection" class="order_values" value="cluster_projection">Clustering -> Projection</a></li>
+              <li><a id="projection_cluster" class="order_values" value="projection_cluster">Projection -> Clustering</a></li>              
+            </ul>
+          </div> 
+        </div>        
+        
+        <div class="col-xs-3 adjust-column">   
+          <div class="dropdown">
+            <button id="cluster_button" class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">k-means<span class="caret"></span></button>
+            <ul class="dropdown-menu">
+              <li><a id="kmeans" class="cluster_values" value="kmeans">k-means</a></li>
+              <li><a id="kmedoid" class="cluster_values" value="kmedoid">k-medoid</a></li>
+              <li><a id="hclust" class="cluster_values" value="hclust">Hierarchical</a></li>                            
+            </ul>
+          </div>        
+        </div>        
+        
+        <div class="col-xs-3 adjust-column">       
+          <div class="dropdown">
+            <button id="projection_button" class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">Force Scheme<span class="caret"></span></button>
+            <ul class="dropdown-menu">
+              <li><a id="force" class="projection_values" value="force">Force Scheme</a></li>
+              <li><a id="lamp" class="projection_values" value="lamp">LAMP</a></li>
+              <li><a id="lsp" class="projection_values" value="lsp">LSP</a></li>
+              <li><a id="mds" class="projection_values" value="mds">MDS</a></li>
+              <li><a id="pca" class="projection_values" value="pca">PCA</a></li>
+              <li><a id="plmp" class="projection_values" value="plmp">PLMP</a></li>
+              <li><a id="tsne" class="projection_values" value="tsne">tSNE</a></li>                                                                                    
+            </ul>
+          </div>
+        </div>        
+        
+        <div class="col-xs-3 adjust-column">   
+          <div class="input-group">
+            <label class="control-label">Threshold:</label>
+            <input class="adjust-input" id="threshold" type="number" min="0" max="" step="0.1" value="0.5"/>
+          </div>
+        </div>    
+        
+        <div class="col-xs-3 adjust-column">               
+          <div class="input-group">
+            <label class="control-label">Fraction:</label>
+            <input class="adjust-input" id="frac" type="number" min="0" max="" step="0.1" value="4.0"/>
+          </div>
+        </div>  
+        
+        <div class="col-xs-3 adjust-column">               
+          <div class="input-group">
+            <label class="control-label">Iteractions:</label>
+            <input class="adjust-input" id="max_iteration" type="number" min="0" max="" step="1" value="20"/>
+          </div>        
+        </div>   
+        
+        
+        <div class="col-xs-3 adjust-column">               
+          <div class="input-group">
+            <label class="control-label">#Clusters:</label>
+            <input class="adjust-input" id="qt_cluster" type="number" min="0" max="" step="1" value="0"/>
+          </div>       
+       </div>  
+       
+        <div class="col-xs-2 adjust-column adjust-space">               
+          <div class="input-group">
+            <label class="control-label">Seed:</label>
+            <input class="adjust-input" id="seed" type="number" min="-1" max="" step="1" value="0"/>
+          </div>
+        </div>  
+        
+        <div class="col-xs-5 adjust-firt-column">
+          <button id='load_button' type='button' class="btn btn-info action-button" >Load .csv</button>
+        </div>
+        
+        <div class="col-xs-5 adjust-column adjust-button">
+          <button id='load_button_tree' type='button' class="btn btn-info" >Load tree</button>
+        </div>        
+        
+        <div class="col-xs-5 adjust-column adjust-button">
+          <button id='load_button_group' type='button' class="btn  btn-info action-button" >Load groups</button> 
+        </div>        
+        
+        <div class="col-xs-5 adjust-column adjust-button">
+          <button id='normal' type='button' class="btn btn-outline btn-default" >1st Level</button>
+        </div>                
+
+        <div class="col-xs-5 adjust-column adjust-button">
+          <button id='medoid' type='button' class="btn btn-outline btn-default" >Medoid</button>
+        </div>                
+        
+        <div class="col-xs-5 adjust-column adjust-button">
+          <button id='transparent' type='button' class="btn btn-outline btn-default" >Transparency</button>
+        </div>                        
+        
+        <div class="col-xs-5 adjust-column adjust-button">
+          <button id='show_point' type='button' class="btn btn-outline btn-default" >Points</button>
+        </div>                        
+        
+        <div class="col-xs-2 adjust-column">       
+          <div class="input-group" id="color_palette">
+          </div>
+        </div>        
+        
+        <div class="col-xs-2 adjust-column adjust-button">       
+          <div class="dropdown">
+            <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">Labels<span class="caret"></span></button>
+            <ul class="dropdown-menu" id="list_group">
+            </ul>
+          </div> 
+        </div>        
+      
+        
+        <div class="alert alert-success col-xs-3 adjust-column adjust-alert">
+          <i id="show_values" class="fa fa-info-circle adust-label"></i>
+        </div>     
+        
+      </div>
+      
+    </div>
+    
+    <div id="chart" class="row adjust-row">
+
+      <div id="chart_left" class="col-xs-6 inner-chart inner-chart-left inner-chart-50"></div>
+     
+      <div id="chart_right" class="col-xs-6 inner-chart inner-chart-right inner-chart-50">
+        <ul class="nav nav-tabs adjust-nav-tabs" id="tabs">
+          <li class="active"><a data-toggle="tab" href="#chart_treemap">Treemap</a></li>
+          <li><a data-toggle="tab" href="#chart_word_cloud">Word Cloud</a></li>          
+        </ul>
+        <div class="tab-content adjust-tab">
+          <div id="chart_treemap" class="tab-pane fade in active inner-chart"></div>
+          <div id="chart_word_cloud" class="tab-pane fade inner-chart"></div>          
+        </div>      
+      </div>
+    </div>  
+    
+    <div class="modal fade" id="loading" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-loader">      
+        <img src="js/shared2/loader.gif" />
+      </div>
+    </div> 
+
+    <div id="image_tooltip" class="hidden"><p><span id="value"><img id="thumb" src="" /></span></p></div>    
+    
+    <div id="modal_form" class="modal fade" aria-hidden="true"></div>
+    
+    <div id="my-tooltip" class="tooltip tooltip-top hidden" aria-hidden="true">
+      <div class="tooltip-inner" aria-hidden="true">
+        <label class="control-label">Stress:</label>
+        <span id="stress">0</span>
+        <br />
+        <label class="control-label adust-label">N. Preservation:</label>
+        <span id="n_preserv">0</span>
+        <br />
+        <label class="control-label adust-label">N. Hit:</label>
+        <span id="n_hit">0</span>
+        <br />
+        <label class="control-label adust-label">Silhouette.:</label>
+        <span id="silhouette">0</span>                            
+        <br />  
+      
+        <span id="silhouette">-------------------------------------</span>
+      
+        <label class="control-label">Records:</label>
+        <span id="qt_inst">0</span>
+        <label class="control-label adust-label">Clusters:</label>
+        <span id="qt_group">0</span>
+        <label class="control-label adust-label">Height:</label>
+        <span id="qt_height">0</span>
+        <label class="control-label adust-label">Depth:</label>
+        <span id="qt_depth">0</span>                    
+        <label class="control-label adust-label">Min.:</label>
+        <span id="qt_min">0</span>
+      </div>
+    </div>    
+
+  </body>
+
+  <script src="js/shared2/jquery-3.2.1.min.js" type="application/javascript"></script>
+  <script src="js/shared2/bootstrap-3.3.7-dist/js/bootstrap.min.js" ></script>
+  <script src="js/shared2/d3/d3.min.js"></script>
+  
+  <script type="application/shiny-singletons"></script>  
+  <script type="application/html-dependencies">
+    json2[2014.02.04];
+    jquery[1.12.4];
+    shiny[1.0.3];
+    ionrangeslider[2.1.6];
+    strftime[0.9.2];
+    bootstrap[3.3.7]
+  </script>  
+<!-- O shiny.js está na pasta do R   -->
+  <script src="shared/shiny.js"></script>
+  
+  <script src="js/shared2/fancyBox/source/jquery.fancybox.pack.js" type="text/javascript" ></script>
+  <script src="js/shared2/fileinput/fileinput.js"></script>      
+  <script src="js/shared2/kolorwheel/KolorWheel.js"></script>
+  <script src="js/shared2/bgrins-spectrum-98454b5/spectrum.js"></script>
+  <script src="js/shared2/d3.layout.cloud.js"></script>
+  <script src="js/shared2/functions.js"></script>
+  <script src="js/shared2/ColorPalette.js"></script>
+  <script src="js/shared2/ViewData.js"></script>  
+  
+  <script src="js/topicloud.js"></script>
+  <script src="js/packedtree.js"></script>
+  <script src="js/treemap.js"></script>
+  <script src="js/hipp.js"></script>
+  <script src="js/main.js"></script>
+</html>
