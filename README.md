@@ -19,7 +19,7 @@ These instructions will get you a copy of the project to run on your local machi
 ```
 After downloading and discompacting xHiPP directory, copy from *run/* directory files: 
 *run.R*, *RUN_SERVER* and *RUN_CLIENT*
-**obs.: If you are using Windows pleace take *.bat* files, if you are using Unix-like, take *.sh* ones**
+_obs.: If you are using Windows pleace take *.bat* files, if you are using Unix-like, take *.sh* ones_
 ```
 
 ```
@@ -30,8 +30,7 @@ Edit *RUN_SERVER_PATH* variable into *RUN_SERVER* to your correspondent *run.R* 
 ```
 
 ```
-If it is necessary, edit *USE_CHROME* and *SERVER_TCP_PORT* variables into *RUN_CLIENT* 
-to your desaired configuration.
+If it is necessary, edit *USE_CHROME* and *SERVER_TCP_PORT* variables into *RUN_CLIENT* to your desaired configuration.
 ```
 
 
