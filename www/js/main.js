@@ -21,7 +21,7 @@ $(document).ready(
         showRemove: false,
         showCancel: false,
         allowedFileExtensions: ["csv", "json"],
-        browseLabel: "Select file"
+        browseLabel: ""
     }); 
     
     $("#userFile").fileinput("reset");

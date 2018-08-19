@@ -98,7 +98,7 @@
   width: 100%;
 }  
 
-.adjust-firt-column
+.adjust-first-column
 {
   padding-left: 0px;
   padding-right: 0px;
@@ -106,6 +106,12 @@
   margin-top: 5px;
   height: 32px;
   width: auto;
+}
+
+.adjust-select-file
+{
+  min-width: 180px;
+  max-width: 580px;  
 }
 
 .adjust-column
@@ -116,22 +122,21 @@
   margin-top: 5px;
 }
 
+@media (max-width: 1376px) 
+{
+  .adjust-column
+  {
+    padding-left: 1px;
+  }
+  .adjust-select-file
+  {
+    width: 180px;
+  }
+}
+
 .adjust-button
 {
   padding-left: 4px;
-}
-
-.my-col-2
-{
-  padding-right: 0px;
-  padding-left: 0px;
-  width: auto;
-}
-
-.adust-label
-{
-  margin: 6px 0px 6px 0px;
-/*   margin-left: 10px; */
 }
 
 .adjust-alert
