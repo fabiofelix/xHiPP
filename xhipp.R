@@ -108,7 +108,7 @@ fill.children = function(node, dataset, bynamerow, name.group, init.coord = FALS
   return(node);
 }
 
-fill.children2 = function(node, dataset_aux, clust, init.coord, name.group, original.data = NULL)
+fill.children2 = function(node, dataset_aux, clust, init.coord, name.group, original.data = NULL, columns.aux = NULL)
 {
   list_columns = get.numeric.columns(dataset_aux, name.group);
 
@@ -364,7 +364,7 @@ split = function(node, dataset, type.cluster, qt_cluster,  name.group, init.coor
       node$children   = append(node$children, list(new_node));
     }
     
-    node = fill.children2(node, dataset_aux, clust, init.coord, name.group, original.data = original.data);
+    node = fill.children2(node, dataset_aux, clust, init.coord, name.group, original.data = original.data, columns.aux = columns.aux);
 
     # for(i in 1:length(groups))
     # {
