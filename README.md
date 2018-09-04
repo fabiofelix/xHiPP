@@ -10,9 +10,9 @@ These instructions will get you a copy of the project to run on your local machi
 
 ### Prerequisites
 
-* [GSL] (https://www.gnu.org/software/gsl/) - One's using Linux, verify if GSL library is installed, and install it if necessary
 * [R](https://www.r-project.org/) - Download and install the R latest version
 * [RStudio](https://www.rstudio.com/products/rstudio/download/) - Download and install the RStudio latest version
+* [GSL](https://www.gnu.org/software/gsl/) - One's using Linux, verify if GSL library is installed, and install it if necessary
 * [R packages](https://www.r-bloggers.com/installing-r-packages/) - Open RStudio and follow the previous link instructions to install these packages:  "jsonlite", "mp", "doParallel", "tm", "topicmodels", "SnowballC", "shiny", "mime", "stringr"
 
 ### Installing
