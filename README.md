@@ -62,6 +62,22 @@ columns 'name' and 'group' especified above. For instance,
 
 ### File format (json)
 
-It is possible to load .json files, that contains a preprocessed xHiPP structure. 
+When a .csv file is processed, xHiPP save a .json with the tree structure in www/data/json to future use. Therefore, user can load preprocessed structures with xHiPP.
 
-#TODO: Complete this topic
+### Directory structure
+
+Files specified in column 'name' of the .csv file will be searched inside www/data in the directories audio, img or text. Audio files will be presented with respective spectrograms
+whether the audio and the image stay in the audio directory (e.g. sound.mp3 and sound.png are in www/data/audio directory). If just one of them (audio or image) is in the audio directory,
+just it will be presented to the user.
+
+
+
+
+
+
+
+
+
+
+
+
