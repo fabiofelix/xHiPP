@@ -58,6 +58,7 @@ columns 'name' and 'group' especified above. For instance,
 
 | name  | word1 | word2 | name.1 | word3 | word4 | group.1 | word5 | group |
 | ----- | ----- | ----- | ------ | ----- | ----- | ------- | ----- | ----- |
+| file1.txt | 0.3 | 0.5 | 0.4 | 0.2 | 0.1 | 0 | 0 | news |
 
 ### File format (json)
 
