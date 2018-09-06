@@ -53,7 +53,7 @@ After loading, a user can interact with groups on the left and with treemap on t
 A user can see information inside data points in different ways, depending on the data type, text, image, audio or other types of data.
 
 **DEPENDING ON DATA AND ATTRIBUTE QUANTITY, AND CLUSTERING/PROJECTION ALGORITHMS CHOSEN, THE PROCESSING TIME CAN 
-TAKE A LOT. PLEASE, BE CAREFUL WITH K-MEANS ALGORITHM, BECAUSE OF ITS COMPLEXITY TIME.**
+TAKE A LOT. PLEASE, BE CAREFUL WITH K-MEDOID ALGORITHM, BECAUSE OF ITS COMPLEXITY TIME.**
 
 ### File format (csv)
 
