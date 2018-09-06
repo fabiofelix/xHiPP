@@ -2,7 +2,7 @@
 
 This code is a new design for Hierarchical Point Placement Strategy (HiPP), called
 eXtend HiPP (xHiPP). xHiPP is a Multidimensional Projection capable of present several levels
-of data details.
+of data details. The paper of xHiPP process description is available on the [SIBGRAPI Digital Library](https://www.r-project.org/)
 
 ## Getting Started
 
@@ -14,6 +14,11 @@ These instructions will get you a copy of the project to run on your local machi
 * [RStudio](https://www.rstudio.com/products/rstudio/download/) - Download and install the RStudio latest version
 * [GSL](https://www.gnu.org/software/gsl/) - One's using Linux, verify if GSL library is installed, and install it if necessary
 * [R packages](https://www.r-bloggers.com/installing-r-packages/) - Open RStudio and follow the previous link instructions to install these packages:  "jsonlite", "mp", "doParallel", "tm", "topicmodels", "SnowballC", "shiny", "mime", "stringr"
+
+```
+obs.: The run.R script has a routine to automatically install the R packages. Sadly, in Windows, this routine does not work. That's why
+the user needs to do it manually.
+```
 
 ### Installing
 
@@ -34,7 +39,9 @@ Edit RUN_SERVER_PATH variable into RUN_SERVER to your correspondent run.R path.
 
 ```
 If it is necessary, edit USE_CHROME and SERVER_TCP_PORT variables into RUN_CLIENT to your desired 
-configuration.
+configuration. 
+
+obs.: The value of SERVER_TCP_PORT must be equal to the SERVER.TCP.PORT inside the run.R file.
 ```
 
 ## Running tests
@@ -67,18 +74,7 @@ When a .csv file is processed, xHiPP save a .json with the tree structure in www
 
 ### Directory structure
 
-Files specified in column 'name' of the .csv file will be searched inside www/data in the directories audio, img or text. Audio files will be presented with respective spectrograms
-whether the audio and the image stay in the audio directory (e.g. sound.mp3 and sound.png are in www/data/audio directory). If just one of them (audio or image) is in the audio directory,
+Files specified in column 'name' of the .csv file will be searched inside www/data in the directories audio, img or text. 
+
+Audio files will be presented with respective spectrograms whether the audio and the corresponded image stay in the audio directory (e.g. sound.mp3 and sound.png are in www/data/audio directory). If just one of them (audio or image) is in the audio directory,
 just it will be presented to the user.
-
-
-
-
-
-
-
-
-
-
-
-
