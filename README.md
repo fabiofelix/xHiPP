@@ -13,7 +13,7 @@ These instructions will get you a copy of the project to run on your local machi
 * [R](https://www.r-project.org/) - Download and install the R latest version
 * [RStudio](https://www.rstudio.com/products/rstudio/download/) - Download and install the RStudio latest version
 * [GSL](https://www.gnu.org/software/gsl/) - One's using Linux, verify if GSL library is installed, and install it if necessary
-* [R packages](https://www.r-bloggers.com/installing-r-packages/) - Open RStudio and follow the previous link instructions to install these packages:  "jsonlite", "mp", "doParallel", "tm", "topicmodels", "SnowballC", "shiny", "mime", "stringr"
+* [R packages](https://www.r-bloggers.com/installing-r-packages/) - Open RStudio and follow the previous link instructions to install these packages:  "jsonlite", "mp", "doParallel", "tm", "topicmodels", "SnowballC", "shiny", "mime", "stringr". If necessary, change the R repositories to install packages.
 
 ```
 obs.: The run.R script has a routine to automatically install the R packages. Sadly, in Windows, this routine 
@@ -59,7 +59,7 @@ If the column 'name' has values that indicate file names, the extension of files
 * .png | .jpg | .jpeg to image files;
 * .mp3 | .wav to audio files;
 
-Other files types or data without information about extension will be presented as ordinary data.
+Other file types or data without information about extension will be presented as ordinary data.
 
 obs.: CSV files of text dataset can contain columns named as 'name' and 'group' that are linked with text word frequency. Please, rename these columns to xHiPP correctly encounter 
 columns 'name' and 'group' especified above. For instance,
@@ -78,3 +78,40 @@ Files specified in column 'name' of the .csv file will be searched inside www/da
 
 Audio files will be presented with respective spectrograms whether the audio and the corresponded image stay in the audio directory (e.g. sound.mp3 and sound.png are in www/data/audio directory). If just one of them (audio or image) is in the audio directory,
 just it will be presented to the user.
+
+### Data presentation
+
+Depending on the value of 'name' column in .csv file, data will be presented in some forms. When a user clicks in
+data points:
+
+* Texts are presented for observation;
+* Images are presented and a user can use arrow keys from keyboard to navigate in group images. Just images from the current group focused are shown;
+* Audio is presented to play;
+* To other data types, data attribute values are presented.
+
+To summarize data groups:
+
+* Groups are colored with the predominant color (label) inside them;
+* Text groups could present text topics from their text items. On the right of visualization, a WordCloud from group words are presented;  
+* Image groups could present medoid images;
+* Audio groups could present spectrogram images from medoid item;
+* To other data types, when mouse hover, images with a heatmap representing attribute values distribution.
+
+## Screenshots
+
+### Tool set
+
+![xHiPP toolbox](img/tools.png)
+
+### Some data visions and summarization
+
+![xHiPP toolbox](img/visions.png)
+
+### Image summarization
+
+![xHiPP toolbox](img/medoids.png)
+
+### Text summarization
+
+![xHiPP toolbox](img/text.png)
+
