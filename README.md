@@ -16,8 +16,8 @@ These instructions will get you a copy of the project to run on your local machi
 * [R packages](https://www.r-bloggers.com/installing-r-packages/) - Open RStudio and follow the previous link instructions to install these packages:  "jsonlite", "mp", "doParallel", "tm", "topicmodels", "SnowballC", "shiny", "mime", "stringr"
 
 ```
-obs.: The run.R script has a routine to automatically install the R packages. Sadly, in Windows, this routine does not work. That's why
-the user needs to do it manually.
+obs.: The run.R script has a routine to automatically install the R packages. Sadly, in Windows, this routine 
+does not work. That's why the user needs to do it manually.
 ```
 
 ### Installing
