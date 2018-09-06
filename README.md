@@ -2,7 +2,7 @@
 
 This code is a new design for Hierarchical Point Placement Strategy (HiPP), called
 eXtend HiPP (xHiPP). xHiPP is a Multidimensional Projection capable of present several levels
-of data details. The paper of xHiPP process description is available on the [SIBGRAPI Digital Library](https://www.r-project.org/)
+of data details. The paper of xHiPP process description is available on the [SIBGRAPI Digital Library](http://urlib.net/8JMKD3MGPAW/3RPBD6H)
 
 ## Getting Started
 
