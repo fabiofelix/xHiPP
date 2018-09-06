@@ -46,7 +46,15 @@ obs.: The value of SERVER_TCP_PORT must be equal to the SERVER.TCP.PORT inside t
 
 ## Running tests
 
-First and foremost, execute the RUN_SERVER script. After this, just execute RUN_CLIENT to open your browse showing xHiPP.
+First and foremost, execute the RUN_SERVER script. After this, just execute RUN_CLIENT to open your browse showing xHiPP. 
+
+After loading, a user can interact with groups on the left and with treemap on the right, zooming in and out the structure. Moreover, some there are some options to remove group boundary, present transparent groups or show some group summarization.  
+
+A user can see information inside data points in different ways, depending on the data type, text, image, audio or other types of data.
+
+```
+DEPENDING ON DATA AND ATTRIBUTE QUANTITY, AND CLUSTERING/PROJECTION ALGORITHMS CHOSEN, THE PROCESSING TIME CAN TAKE A LOT. PLEASE, BE CAREFUL WITH K-MEANS ALGORITHM, BECAUSE OF ITS COMPLEXITY TIME.
+```
 
 ### File format (csv)
 
