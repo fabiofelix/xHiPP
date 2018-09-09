@@ -1,6 +1,8 @@
 #================================================================================#
 #Implementation of xHiPP algorithm
 #
+#Changed: 09/08/2018
+#         Fixed error: tests to know whether a specific column ('name' or 'group') exists 
 #Changed: 04/08/2018
 #         Added colnames into root tree node (cf. fill.children)
 #Changed: 03/05/2018
@@ -61,9 +63,9 @@ fill.children.aux = function(dataset, bynamerow, list_columns, name.group, init.
     new_node$name = paste("item_", index, sep = "");
     new_node$row_index = index;
     
-    if(!is.null(dataset[i, name.group[1]]))
+    if(name.group[1] %in% colnames(dataset))  
       new_node$name = as.character(dataset[i, name.group[1]]);
-    if(!is.null(dataset[i, name.group[2]]))
+    if(name.group[2] %in% colnames(dataset))  
       new_node$group = dataset[i, name.group[2]];
     
     new_node$data  = as.numeric(dataset[i, list_columns]);
@@ -121,9 +123,9 @@ fill.children2 = function(node, dataset_aux, clust, init.coord, name.group, orig
     new_node$name = paste("item_", index, sep = "");
     new_node$row_index = index;
     
-    if(!is.null(dataset_aux[i, name.group[1]]))
+    if(name.group[1] %in% colnames(dataset_aux))    
       new_node$name = as.character(dataset_aux[i, name.group[1]]);
-    if(!is.null(dataset_aux[i, name.group[2]]))
+    if(name.group[2] %in% colnames(dataset_aux))      
       new_node$group = dataset_aux[i, name.group[2]];
     
     new_node$data  = as.numeric(dataset_aux[i, list_columns]);
@@ -335,7 +337,7 @@ split = function(node, dataset, type.cluster, qt_cluster,  name.group, init.coor
       original.data = original.data[get.index(node), ];
       columns.aux   = get.numeric.columns(original.data, name.group);
     }  
-    
+
     if(type.cluster == "kmeans" ||  !(type.cluster %in% c("kmeans", "kmedoid", "hclust")))
       clust = kmeans(dataset_aux[, list_columns], qt_cluster, iter.max = 15)
     else if(type.cluster == "kmedoid")
@@ -401,8 +403,16 @@ save.summary = function(tree, dataset, name.group, summary.path, original.data)
     if(ncol(dataset) == 1)
       dataset = cbind(dataset, dataset[, 1])    
 
-    dataset  = dataset[order(dataset[, name.group[2]]), ];
-    groups   = table(dataset[, name.group[2]]);
+    if(name.group[2] %in% colnames(dataset))  
+    {
+      dataset  = dataset[order(dataset[, name.group[2]]), ];
+      groups   = table(dataset[, name.group[2]]);
+    }else
+    {
+      dataset  = dataset[order(dataset[, ncol(dataset)]), ];
+      groups   = table(dataset[, ncol(dataset)]);
+    }
+    
     gray.aux = gray.colors(length(groups));
     colors   = c();
     

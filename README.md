@@ -10,10 +10,21 @@ These instructions will get you a copy of the project to run on your local machi
 
 ### Prerequisites
 
+If you are using Linux, verify whether these pacakges the following packages are installed:
+
+* [GCC](https://gcc.gnu.org/) -  C/C++ and Fortran Compiler
+* [LAPCK](http://www.netlib.org/lapack/)
+* [BLAS](http://www.netlib.org/blas/)
+* [Libxml2](http://xmlsoft.org/)
+* [GSL](https://www.gnu.org/software/gsl/)
+
+These packages will be necessary to install R packages. After their installation, you will be able to install the next things
+
 * [R](https://www.r-project.org/) - Download and install the R latest version
 * [RStudio](https://www.rstudio.com/products/rstudio/download/) - Download and install the RStudio latest version
-* [GSL](https://www.gnu.org/software/gsl/) - One's using Linux, verify if GSL library is installed, and install it if necessary
 * [R packages](https://www.r-bloggers.com/installing-r-packages/) - Open RStudio and follow the previous link instructions to install these packages:  "jsonlite", "mp", "doParallel", "tm", "topicmodels", "SnowballC", "shiny", "mime", "stringr". If necessary, change the R repositories to install packages.
+
+Tests that worked were performed with the following R versions: 3.3.1, 3.3.3 and 3.4.4. I tested with Ubuntu, Mint and Windows 10.
 
 ```
 obs.: The run.R script has a routine to automatically install the R packages. Sadly, in Windows, this routine 
@@ -74,6 +85,8 @@ columns 'name' and 'group' especified above. For instance,
 | name  | word1 | word2 | name.1 | word3 | word4 | group.1 | word5 | group |
 | ----- | ----- | ----- | ------ | ----- | ----- | ------- | ----- | ----- |
 | file1.txt | 0.3 | 0.5 | 0.4 | 0.2 | 0.1 | 0 | 0 | news |
+
+obs.: Please, if your .csv file doesn't have the column named 'group', the last column of the file will be used as the data label.
 
 ### File format (json)
 

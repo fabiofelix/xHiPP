@@ -87,7 +87,7 @@ norm.stand = function(dataset, type)
     {
       MAX = max(dataset[, i]);
       MIN = min(dataset[, i]);
-      dataset[, i] = (dataset[, i] - MIN) / ifelse(MIN == MAX, 1, MAX - MIN)        
+      dataset[, i] = (dataset[, i] - MIN) / ifelse(MIN == MAX, 1, MAX - MIN)
     }
   }else if(type == "square")
   {
