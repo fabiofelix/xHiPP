@@ -24,7 +24,7 @@ These packages will be necessary to install R packages. After their installation
 * [RStudio](https://www.rstudio.com/products/rstudio/download/) - Download and install the RStudio latest version
 * [R packages](https://www.r-bloggers.com/installing-r-packages/) - Open RStudio and follow the previous link instructions to install these packages:  "jsonlite", "mp", "doParallel", "tm", "topicmodels", "SnowballC", "shiny", "mime", "stringr". If necessary, change the R repositories to install packages.
 
-Tests that worked were performed with the following R versions: 3.3.1, 3.3.3 and 3.4.4. I tested with Ubuntu, Mint and Windows 10.
+Tests that worked were performed with the following R versions: 3.3.1, 3.3.3 and 3.4.4. I tested with Slackware, Ubuntu, Mint and Windows 10.
 
 ```
 obs.: The run.R script has a routine to automatically install the R packages. Sadly, in Windows, this routine 
