@@ -10,13 +10,13 @@ These instructions will get you a copy of the project to run on your local machi
 
 ### Prerequisites
 
-If you are using Linux, verify whether these pacakges the following packages are installed:
+If you are using Linux, verify whether the following packages are installed:
 
 * [GCC](https://gcc.gnu.org/) -  C/C++ and Fortran Compiler
-* [LAPCK](http://www.netlib.org/lapack/)
-* [BLAS](http://www.netlib.org/blas/)
-* [Libxml2](http://xmlsoft.org/)
-* [GSL](https://www.gnu.org/software/gsl/)
+* [LAPCK](http://www.netlib.org/lapack/) - Standard software library for numerical linear algebra
+* [BLAS](http://www.netlib.org/blas/) - Set of low-level routines for common linear algebra operations
+* [Libxml2](http://xmlsoft.org/) - Library for parsing XML documents
+* [GSL](https://www.gnu.org/software/gsl/) - Library for numerical computations in applied mathematics and science
 
 These packages will be necessary to install R packages. After their installation, you will be able to install the next things
 
@@ -34,8 +34,8 @@ does not work. That's why the user needs to do it manually.
 ### Installing
 
 ```
-After downloading and unzip xHiPP directory, copy from run/ directory files: run.R, 
-RUN_SERVER and RUN_CLIENT
+After downloading and unzipping xHiPP directory, copy from run/ directory files: run.R, 
+RUN_SERVER and RUN_CLIENT.  
 
 obs.: If you are using Windows, please take .bat files. If you are using Unix-like, take .sh ones
 ```
@@ -59,9 +59,9 @@ obs.: The value of SERVER_TCP_PORT must be equal to the SERVER.TCP.PORT inside t
 
 First and foremost, execute the RUN_SERVER script. After this, just execute RUN_CLIENT to open your browse showing xHiPP. 
 
-After loading, a user can interact with groups on the left and with treemap on the right, zooming in and out the structure. Moreover, some there are some options to remove group boundary, present transparent groups or show some group summarization.  
+After loading, a user can interact with groups on the left and with treemap on the right, zooming in and out the structure. Moreover, there are some options to remove group boundary, present transparent groups or show some group summarization.  
 
-A user can see information inside data points in different ways, depending on the data type, text, image, audio or other types of data.
+A user can see information inside data points in different ways, depending on the data type (text, image, audio or other types of data).
 
 **DEPENDING ON DATA AND ATTRIBUTE QUANTITY, AND CLUSTERING/PROJECTION ALGORITHMS CHOSEN, THE PROCESSING TIME CAN 
 TAKE A LOT. PLEASE, BE CAREFUL WITH K-MEDOID ALGORITHM, BECAUSE OF ITS COMPLEXITY TIME.**
@@ -91,6 +91,7 @@ obs.: Please, if your .csv file doesn't have the column named 'group', the last 
 ### File format (json)
 
 When a .csv file is processed, xHiPP save a .json with the tree structure in www/data/json to future use. Therefore, user can load preprocessed structures with xHiPP.
+For instance, if one wants to change palette color, just change colors and load preprocessed file (json), instead of reprocess entire datset (csv).
 
 ### Directory structure
 
