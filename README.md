@@ -43,7 +43,8 @@ obs.: If you are using Windows, please take .bat files. If you are using Unix-li
 ```
 
 ```
-Edit xHIPP.PATH variable into run.R to your correspondent xHiPP directory path. If you are using Windows, always use DOUBLE backslashes.  
+Edit xHIPP.PATH variable into run.R to your correspondent xHiPP directory path. If you are using Windows, 
+always use DOUBLE backslashes.  
 ```
 
 ```
