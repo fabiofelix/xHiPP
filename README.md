@@ -26,7 +26,7 @@ These packages will be necessary to install R packages. After their installation
 
 Tests that worked were performed with the following R versions: 3.3.1, 3.3.3 and 3.4.4. I tested with Slackware, Ubuntu, Mint and Windows 10.
 
-Take care if all these packages were really installed. If not, xHiPP will not run.
+Take care whether all these packages were really installed. If not, xHiPP will not run.
 
 ```
 obs.: The run.R script has a routine to automatically install the R packages. Sadly, in Windows, this routine 
