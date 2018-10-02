@@ -164,7 +164,7 @@ function(input, output, session)
           tree = evaluate(tree, data, tree$qt_cluster);
           
           if(process.type == process.types$text && !is.null(input$text_path) && !is.na(input$text_path) && length(list.files(input$text_path, pattern = ".txt")) > 0)
-            tree = extract.tree.topics.new(tree, input$text_path, data = data, topic.as.group = TRUE)
+            tree = extract.tree.topics.new(tree, input$text_path, data = data, topic.as.group = !("group" %in% colnames(data)))
 
           toJSON(tree, pretty = TRUE, auto_unbox = TRUE);
       },
