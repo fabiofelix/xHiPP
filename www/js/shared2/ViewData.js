@@ -1,6 +1,8 @@
 //This classes needs: bootstrap, fancybox
 //                    Forms form_text.html, form_audio.html, form_others into pages/
 //
+//Changed: 10/04/2018
+//         Bug fixed: use of html funciton insted of text in show_tooltip
 //Changed: 07/17/2018
 //         Added function show_tooltip
 //Changed: 05/10/2018
@@ -159,7 +161,7 @@ var ViewData = function()
       else if(type == "text")    
         d3.select(wrapper)
           .select("#value")
-          .text(value);        
+          .html(value);        
     }
     
     d3.select(wrapper).classed("hidden", !show);

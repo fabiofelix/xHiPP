@@ -40,8 +40,8 @@ var ColorPalette = function()
     
     if(_this.selected_palette === "custom")
     {
-      _this.selected_start   = default_start === "" ? "#FF0000" : default_start;
-      _this.selected_finish = default_finish  === "" ? "#00FF00" : default_finish;
+      _this.selected_start  = default_start === "" ? _this.selected_start : default_start;
+      _this.selected_finish = default_finish  === "" ? _this.selected_finish : default_finish;
     }    
     
     var ul  = $("<ul>").addClass("dropdown-menu");
@@ -74,7 +74,7 @@ var ColorPalette = function()
         selected_link = link;
     }
     
-    var label  = $("<label>").text(title + ": ");
+    var label  = $("<label>").text(title + ": ").css("padding-right", 5);
     var button = $("<button>").html("Default<span class='caret'></span>")
                               .addClass("btn btn-default dropdown-toggle")
                               .attr("id", "palette_button")
@@ -180,7 +180,7 @@ var ColorPalette = function()
     var start  = $("#custom_start").spectrum("get"),
         finish = $("#custom_finish").spectrum("get");
     
-    _this.selected_start   = finish.toHexString().toUpperCase();
+    _this.selected_start  = finish.toHexString().toUpperCase();
     _this.selected_finish = start.toHexString().toUpperCase();
         
     $("#custom_start").spectrum("set", finish);
@@ -193,15 +193,16 @@ var ColorPalette = function()
     
     if(_this.selected_palette === "default")
       return _this.default_palette.slice(0, color_qt);
-    else if(colors.start != "" && colors.finish != "" && color_qt > 1)
+    else if(colors.start != "" && colors.finish != "" && color_qt > 0)
       return _this.seq_color(colors.start, colors.finish, color_qt);
     else 
       return _this.default_palette.slice(0, color_qt);
   };
   this.seq_color = function (from, to, qt)
   {
+    
     var base   = new KolorWheel(from);
-    var target = base.abs(to, qt);
+    var target = base.abs(to, qt < 2 ? 2 : qt);
     var values = [];
 
     for (var n = 0; n < qt; n++) 

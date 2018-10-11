@@ -1,5 +1,7 @@
 //config_svg
 
+//Changed: 10/06/2018
+//         Added functions read_data and download_data
 //Changed: 03/02/2017
 //         Changed config_svg to compability with Hipp
 
@@ -95,3 +97,64 @@ function config_svg(wrapper, height, margin)
  
   return svg;  
 };
+
+function parse_time(date)
+{
+//mm/dd/yyyy HH:MM:ss  
+  var tokens = date.split(" "),
+      date   = tokens[0].split('/'),
+      time   = tokens[1].split(':');
+
+//ano, mês, dia, hora, minuto, segundo, milissegundo
+  return new Date(+date[2], +date[0] - 1, +date[1], +time[0], +time[1], +time[2]);  
+}
+
+function download_data(data, file_name, name_label)
+{
+  var csvContent = 
+    (typeof(name_label) === "undefined" ? "" : "name,") + 
+    "X,Y" +
+    (typeof(name_label) === "undefined" ? "" : ",group") + 
+    "\r\n";
+  
+  data.forEach(function(row, i)
+  {
+    csvContent += 
+      (typeof(name_label) === "undefined" ? "" : name_label[i].name + ",") +
+      row.join(",") + 
+      (typeof(name_label) === "undefined" ? "" : "," + name_label[i].group) +
+      "\r\n";
+  }); 
+  
+  var blob = new Blob([csvContent]);
+  
+  // IE hack; see http://msdn.microsoft.com/en-us/library/ie/hh779016.aspx
+  if (window.navigator.msSaveOrOpenBlob)  
+    window.navigator.msSaveBlob(blob, file_name);
+  else
+  {
+    var link = $("<a>", 
+                 {
+                   id: "download_file",
+                   href: window.URL.createObjectURL(blob, {type: "text/plain"}),
+                   download: file_name,
+                   hidden: true
+                });
+    
+    $("body").append(link);
+    link[0].click(); 
+    link.remove();
+  }  
+}
+
+function read_data(stream, callback)
+{
+  var reader = new FileReader();
+
+  reader.onload = function(reader_event)
+  { 
+    callback(reader_event.target.result);
+  };
+  
+  reader.readAsText(stream);
+}
