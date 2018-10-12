@@ -1,6 +1,10 @@
 #================================================================================#
 #Implementation of xHiPP algorithm
 #
+#Changed: 10/12/2018
+#         Fixed error: shiny error when using threads to process projection
+#         Fixed error: tests to know whether a specific column ('name' or 'group') exists 
+#         Changed: Code refactoring
 #Changed: 09/08/2018
 #         Fixed error: tests to know whether a specific column ('name' or 'group') exists 
 #Changed: 04/08/2018
@@ -36,10 +40,10 @@ PROCESSING.TYPE <- process.types$ordinary;
 
 LIST.ENV.FUNC <- c("add.fields","adjust.coordinate","calc.metrics","create.node","dist.point",
              "estimate.radius","fill.children","fill.children.aux","get.data.center","get.index",
-             "hclust.centroid","hierarchy","hierarchy.rec","move.node","padding",
-             "project.tree","project.tree.rec","split","spread.tree","spread.tree.rec",
+             "hclust.centroid","hierarchy", "move.node","padding",
+             "project.tree", "split","spread.tree",
              "spreader","table2tree","tree2table", "get.numeric.columns",
-             "get.text.words", "PROCESSING.TYPE");
+             "get.text.words");
 LIST.ENV.PKG <- c("mp", "cluster");
 
 hclust.centroid = function(index.cluster, dataset, clusters) 
@@ -47,94 +51,37 @@ hclust.centroid = function(index.cluster, dataset, clusters)
   return(colMeans(dataset[which(clusters == index.cluster), ]));
 }
 
-fill.children.aux = function(dataset, bynamerow, list_columns, name.group, init.coord = FALSE)
+fill.children.aux = function(dataset, name.group, init.coord, list.columns = NULL, 
+                             original.data = NULL, columns.aux = NULL, clust = NULL, node = NULL)
 {
-  # list_columns = get.numeric.columns(dataset, name.group);
+  if(is.null(list.columns))
+    list.columns = get.numeric.columns(dataset, name.group)
+  
   list.nodes   = list();
   
   for(i in 1:nrow(dataset))
   {
-    index = i;
-    
-    if(bynamerow)
-      index = as.numeric(rownames(dataset[i, ]))
+#=========================================CREATE NEW NODE===================================================================================
+    index = as.numeric(rownames(dataset[i, ]))
     
     new_node      = create.node(FALSE, TRUE);
     new_node$name = paste("item_", index, sep = "");
     new_node$row_index = index;
     
-    if(name.group[1] %in% colnames(dataset))  
+    if(name.group[1] %in% colnames(dataset))    
       new_node$name = as.character(dataset[i, name.group[1]]);
-    if(name.group[2] %in% colnames(dataset))  
-      new_node$group = dataset[i, name.group[2]];
+    if(name.group[2] %in% colnames(dataset))      
+      new_node$group = dataset[i, name.group[2]]
+    else
+      new_node$group = dataset[i, ncol(dataset)]
     
-    new_node$data  = as.numeric(dataset[i, list_columns]);
-
-    #Teste e atribuições adicionados por causa do HiPP_projection_cluster
-    if(init.coord)
-    {
-      new_node$x = dataset[i, 1];
-      new_node$y = dataset[i, 2];
-    }
-    
-    list.nodes = append(list.nodes, list(new_node));
-  }
-  
-  return(list.nodes);
-}
-
-fill.children = function(node, dataset, bynamerow, name.group, init.coord = FALSE)
-{
-  node$qt_instances = nrow(dataset);
-  list_columns      = get.numeric.columns(dataset, name.group);
-  node$colnames     = colnames(dataset)[list_columns];
-  
-  #====================================================================================================    
-  row.index = list();
-  size = floor(nrow(dataset) / QT.CORES);
-  
-  for(i in 1:QT.CORES)
-  {
-    first.index = 1 + (i - 1) * size;
-    last.index  = ifelse(i == QT.CORES, nrow(dataset), first.index + size - 1);
-    
-    row.index = append(row.index, list(list(first = first.index, last = last.index)));  
-  }  
-  
-  node$children = foreach(i = 1:QT.CORES, .combine = append, .export = LIST.ENV.FUNC, .packages = LIST.ENV.PKG)%dopar%
-  {
-    fill.children.aux(dataset[row.index[[i]]$first:row.index[[i]]$last, ], bynamerow, list_columns, name.group, init.coord)
-  }
-  #====================================================================================================      
-  
-  return(node);
-}
-
-fill.children2 = function(node, dataset_aux, clust, init.coord, name.group, original.data = NULL, columns.aux = NULL)
-{
-  list_columns = get.numeric.columns(dataset_aux, name.group);
-
-  for(i in 1:nrow(dataset_aux))
-  {
-#============================================================================================================================
-    index = as.numeric(rownames(dataset_aux[i, ]))
-    
-    new_node      = create.node(FALSE, TRUE);
-    new_node$name = paste("item_", index, sep = "");
-    new_node$row_index = index;
-    
-    if(name.group[1] %in% colnames(dataset_aux))    
-      new_node$name = as.character(dataset_aux[i, name.group[1]]);
-    if(name.group[2] %in% colnames(dataset_aux))      
-      new_node$group = dataset_aux[i, name.group[2]];
-    
-    new_node$data  = as.numeric(dataset_aux[i, list_columns]);
+    new_node$data  = as.numeric(dataset[i, list.columns]);
     new_node$words = c();
     
     if(PROCESSING.TYPE == process.types$text)
     {
-      data = dataset_aux;
-      columns = list_columns;
+      data = dataset;
+      columns = list.columns;
       
       if(!is.null(original.data))
       {
@@ -148,36 +95,67 @@ fill.children2 = function(node, dataset_aux, clust, init.coord, name.group, orig
     #Teste e atribuições adicionados por causa do HiPP_projection_cluster
     if(init.coord)
     {
-      new_node$x = dataset_aux[i, 1];
-      new_node$y = dataset_aux[i, 2];
+      new_node$x = dataset[i, 1];
+      new_node$y = dataset[i, 2];
     }
-#============================================================================================================================
-    
-    group.index = clust$cluster[i];
-    group = node$children[[group.index]];
-    
-    group$children = append(group$children, list(new_node));
-    group$qt_instances = length(group$children);
-
-    if(PROCESSING.TYPE %in% c(process.types$image, process.types$audio) && !all(group$medoid_coord %in% new_node$data))
+#=======================================APPEND NEW NODE TO GROUP=====================================================================================
+    if(is.null(clust))
+      list.nodes = append(list.nodes, list(new_node))
+    else
     {
-      aux = rbind(group$center, group$medoid_coord, new_node$data);
-      last.row = nrow(aux);
-      aux = as.matrix(dist(aux));
-      aux[1, 1] = .Machine$double.xmax;
-      aux = which.min(aux[, 1]);
+      group.index = clust$cluster[i];
+      group = node$children[[group.index]];
       
-      if(aux == last.row)
+      group$children = append(group$children, list(new_node));
+      group$qt_instances = length(group$children);
+      
+      if(PROCESSING.TYPE %in% c(process.types$image, process.types$audio) && !all(group$medoid_coord %in% new_node$data))
       {
-        group$medoid_coord = new_node$data;
-        group$medoid_name  = new_node$name;
+        aux = rbind(group$center, group$medoid_coord, new_node$data);
+        last.row = nrow(aux);
+        aux = as.matrix(dist(aux));
+        aux[1, 1] = .Machine$double.xmax;
+        aux = which.min(aux[, 1]);
+        
+        if(aux == last.row)
+        {
+          group$medoid_coord = new_node$data;
+          group$medoid_name  = new_node$name;
+        }
       }
+      
+      node$children[[group.index]] = group;
     }
-    
-    node$children[[group.index]] = group;
+#====================================================================================================================================================    
   }  
   
+  if(is.null(clust))
+    return(list.nodes)
+  else
+    return(node);
+}
+
+fill.children = function(node, dataset, name.group, init.coord = FALSE)
+{
+  node$qt_instances = nrow(dataset);
+  list_columns      = get.numeric.columns(dataset, name.group);
+  node$colnames     = colnames(dataset)[list_columns];
+  row.index         = list();
+  size              = floor(nrow(dataset) / QT.CORES);
   
+  for(i in 1:QT.CORES)
+  {
+    first.index = 1 + (i - 1) * size;
+    last.index  = ifelse(i == QT.CORES, nrow(dataset), first.index + size - 1);
+    
+    row.index = append(row.index, list(list(first = first.index, last = last.index)));  
+  }  
+  
+  node$children = foreach(i = 1:QT.CORES, .combine = append, .export = LIST.ENV.FUNC, .packages = LIST.ENV.PKG)%dopar%
+  {
+    fill.children.aux(dataset[row.index[[i]]$first:row.index[[i]]$last, ], name.group, init.coord, list_columns)
+  }
+
   return(node);
 }
 
@@ -228,7 +206,7 @@ table2tree = function(dataset, name.group)
   if(!is.null(dataset))
   {
     tree = create.node(TRUE, FALSE);
-    tree = fill.children(tree, dataset, TRUE, name.group);
+    tree = fill.children(tree, dataset, name.group);
     return(tree);
   }
 }
@@ -315,7 +293,7 @@ tree2table = function(tree, dataset = NULL, by.data = FALSE)
     return(dataset);
 }
 
-split = function(node, dataset, type.cluster, qt_cluster,  name.group, init.coord = FALSE, original.data = NULL, summary.path = "")
+split = function(node, dataset, cluster.algorithm, qt_cluster,  name.group, init.coord = FALSE, original.data = NULL, summary.path = "")
 {
   if(qt_cluster <= 0)
   {
@@ -338,14 +316,14 @@ split = function(node, dataset, type.cluster, qt_cluster,  name.group, init.coor
       columns.aux   = get.numeric.columns(original.data, name.group);
     }  
 
-    if(type.cluster == "kmeans" ||  !(type.cluster %in% c("kmeans", "kmedoid", "hclust")))
+    if(cluster.algorithm == "kmeans" ||  !(cluster.algorithm %in% c("kmeans", "kmedoid", "hclust")))
       clust = kmeans(dataset_aux[, list_columns], qt_cluster, iter.max = 15)
-    else if(type.cluster == "kmedoid")
+    else if(cluster.algorithm == "kmedoid")
     {
       clust = pam(dataset_aux[, list_columns], qt_cluster);
       clust$cluster = clust$clustering;
       clust$centers = clust$medoids;
-    }else if(type.cluster == "hclust")
+    }else if(cluster.algorithm == "hclust")
     {
       clust = hclust(dist(dataset_aux[, list_columns]));
       clust$cluster = cutree(clust, qt_cluster);
@@ -366,16 +344,8 @@ split = function(node, dataset, type.cluster, qt_cluster,  name.group, init.coor
       node$children   = append(node$children, list(new_node));
     }
     
-    node = fill.children2(node, dataset_aux, clust, init.coord, name.group, original.data = original.data, columns.aux = columns.aux);
-
-    # for(i in 1:length(groups))
-    # {
-    #   new_node        = create.node(FALSE, FALSE);
-    #   new_node$center = as.vector(clust$centers[groups[i], ]);
-    #   new_node        = fill.children(new_node, dataset_aux[which(clust$cluster == groups[i]), ], TRUE, name.group, init.coord);
-    # 
-    #   node$children   = append(node$children, list(new_node));
-    # }
+    node = fill.children.aux(dataset_aux, name.group, init.coord, original.data = original.data, columns.aux = columns.aux, 
+                             clust = clust, node = node)
   }
   
   return(node);
@@ -449,38 +419,24 @@ save.summary = function(tree, dataset, name.group, summary.path, original.data)
   return(file.name);
 }
 
-hierarchy.rec = function(tree, dataset, qt_cluster, min.item, type.cluster, name.group, init.coord = FALSE, original.data = NULL, summary.path = "")
+hierarchy = function(tree, dataset, qt_cluster, min.item, cluster.algorithm, name.group, parallel, init.coord = FALSE, original.data = NULL, summary.path = "")
 {
-  tree$summary = save.summary(tree, dataset, name.group, summary.path, original.data);  
-
-  if(!is.null(tree) && !is.null(dataset) && length(tree$children) > min.item)
-  {
-    tree = split(tree, dataset, type.cluster, qt_cluster, name.group, init.coord, original.data, summary.path);
-    
-    for(i in 1:length(tree$children))
-      tree$children[[i]] = hierarchy.rec(tree$children[[i]], dataset, qt_cluster, min.item, type.cluster, name.group, init.coord, original.data, summary.path);
-  }
-
-  return(tree);
-}
-
-hierarchy = function(tree, dataset, qt_cluster, min.item, type.cluster, name.group, init.coord = FALSE, original.data = NULL, summary.path = "")
-{
-  if(!is.null(tree) && !is.null(dataset) && length(tree$children) > min.item)
-  {
-    tree = split(tree, dataset, type.cluster, qt_cluster, name.group, init.coord, original.data, summary.path);
-    
-    #====================================================================================================    
-    # tree$children = foreach(i = 1:length(tree$children), .combine = append, .export = LIST.ENV.FUNC, .packages = LIST.ENV.PKG)%dopar%
-    for(i in 1:length(tree$children))
-    {
-      # list(hierarchy.rec(tree$children[[i]], dataset, qt_cluster, min.item, type.cluster, name.group, init.coord, original.data, summary.path));
-      tree$children[[i]] = hierarchy.rec(tree$children[[i]], dataset, qt_cluster, min.item, type.cluster, name.group, init.coord, original.data, summary.path);
-    }
-    #====================================================================================================    
-  }
+  if(!tree$isRoot)
+    tree$summary = save.summary(tree, dataset, name.group, summary.path, original.data);  
   
-  return(tree);
+  if(!is.null(tree) && !is.null(dataset) && length(tree$children) > min.item)
+  {
+    tree = split(tree, dataset, cluster.algorithm, qt_cluster, name.group, init.coord, original.data, summary.path);
+    
+    `%myinfix%` <- ifelse(parallel, `%dopar%`, `%do%`)
+    
+    tree$children = foreach(i = 1:length(tree$children), .combine = append, .export = LIST.ENV.FUNC, .packages = LIST.ENV.PKG)%myinfix%
+    {
+      list(hierarchy(tree$children[[i]], dataset, qt_cluster, min.item, cluster.algorithm, name.group, FALSE, init.coord, original.data, summary.path));
+    }
+  }  
+  
+  return(tree);  
 }
 
 padding = function(dataset, qt.min)
@@ -560,121 +516,68 @@ adjust.coordinate = function(coordinates, node)
   return(coordinates);
 }
 
-project.tree.rec = function(tree, dataset, type.projection, name.group)
+project.tree = function(tree, dataset, projection.algorithm, name.group, parallel)
 {
-  if(!is.null(tree) && !is.null(dataset) && !tree$isLeave)
+  if(!is.null(tree) && !is.null(dataset))
   {
     if(tree$children[[1]]$isLeave)
     {
       dataset_aux = dataset[get.index(tree), get.numeric.columns(dataset, name.group)];
       
-      if(type.projection == "force")
+      if(projection.algorithm == "force")
         vis = forceScheme(dist(dataset_aux))
-      else if(type.projection == "lamp")
+      else if(projection.algorithm == "lamp")
         vis = lamp(padding(dataset_aux, 4))
-      else if(type.projection == "lsp")
+      else if(projection.algorithm == "lsp")
         vis = lsp(padding(dataset_aux, 20))
-      else if(type.projection == "mds")
+      else if(projection.algorithm == "mds")
         vis = cmdscale(dist(padding(dataset_aux, 3)))
-      else if(type.projection == "pca")
+      else if(projection.algorithm == "pca")
         vis = prcomp(padding(dataset_aux, 3))$x[, 1:2]
-      else if(type.projection == "plmp")
+      else if(projection.algorithm == "plmp")
         vis = plmp(padding(dataset_aux, 10))
-      else if(type.projection == "tsne")
-        vis = tSNE(padding(dataset_aux, 2));
-    }else
-    {
-      dataset_aux = get.data.center(tree, dataset, name.group);
-      vis = forceScheme(dist(dataset_aux));
-    }  
-    
-    tree = estimate.radius(tree, dataset, name.group);
-    vis  = adjust.coordinate(vis, tree);
-    
-    for(i in 1:length(tree$children))
-    {
-      index = i;
-      
-      if(tree$children[[i]]$isLeave)
-        index = which(rownames(dataset_aux) == as.character(tree$children[[i]]$row_index));
-      
-      tree$children[[i]]$x = vis[index, 1];
-      tree$children[[i]]$y = vis[index, 2]; 
-      
-      #Teste adicionado por causa do HiPP_projection_cluster
-      if(!tree$children[[i]]$isLeave) 
-      {
-        tree$children[[i]]$parent_r = tree$r;
-        tree$children[[i]]$parent_instances = tree$qt_instances;
-        tree$children[[i]] = project.tree.rec(tree$children[[i]], dataset, type.projection, name.group);      
-      }
-    }
-  }
-  
-  return(tree);  
-}
-
-project.tree = function(tree, dataset, type.projection, name.group)
-{
-  if(!is.null(tree) && !is.null(dataset) && tree$isRoot)
-  {
-    # if(tree$children[[1]]$isLeave)
-    #   dataset_aux = dataset[get.index(tree), get.numeric.columns(dataset, name.group)]
-    # else
-    #   dataset_aux = get.data.center(tree, dataset, name.group);
-    
-    if(tree$children[[1]]$isLeave)
-    {
-      dataset_aux = dataset[get.index(tree), get.numeric.columns(dataset, name.group)];
-
-      if(type.projection == "force")
-        vis = forceScheme(dist(dataset_aux))
-      else if(type.projection == "lamp")
-        vis = lamp(padding(dataset_aux, 4))
-      else if(type.projection == "lsp")
-        vis = lsp(padding(dataset_aux, 20))
-      else if(type.projection == "mds")
-        vis = cmdscale(dist(padding(dataset_aux, 3)))
-      else if(type.projection == "pca")
-        vis = prcomp(padding(dataset_aux, 3))$x[, 1:2]
-      else if(type.projection == "plmp")
-        vis = plmp(padding(dataset_aux, 10))
-      else if(type.projection == "tsne")
+      else if(projection.algorithm == "tsne")
         vis = tSNE(padding(dataset_aux, 2));
     }else
     {
       dataset_aux = get.data.center(tree, dataset, name.group);
       vis = forceScheme(dist(dataset_aux));
     }
-    
+
     tree = estimate.radius(tree, dataset, name.group);
-    vis  = adjust.coordinate(vis, tree);
+    vis  = adjust.coordinate(vis, tree); 
+
+    `%myinfix%` <- ifelse(parallel, `%dopar%`, `%do%`)
+
+#shiny 1.1.0 nao esta avaliando algumas expressoes dentro das threads. Principalmente quando elas sao passadas como parametro
+#e seus valroes sao provenientes de componentes de tela...
+    projection.algorithm
+    name.group
     
-    #====================================================================================================    
-    tree$children = foreach(i = 1:length(tree$children), .combine = append, .export = LIST.ENV.FUNC, .packages = LIST.ENV.PKG)%dopar%
+    tree$children = foreach(i = 1:length(tree$children), .combine = append, .export = LIST.ENV.FUNC, .packages = LIST.ENV.PKG)%myinfix%
     {
       index = i;
-      
+
       if(tree$children[[i]]$isLeave)
         index = which(rownames(dataset_aux) == as.character(tree$children[[i]]$row_index));
-      
+
       tree$children[[i]]$x = vis[index, 1];
-      tree$children[[i]]$y = vis[index, 2]; 
-      
+      tree$children[[i]]$y = vis[index, 2];
+
       #Teste adicionado por causa do HiPP_projection_cluster
       if(tree$children[[i]]$isLeave)
-        list(tree$childre[[i]])
+        list(tree$children[[i]])
       else
       {
         tree$children[[i]]$parent_r = tree$r;
         tree$children[[i]]$parent_instances = tree$qt_instances;
-        list(project.tree.rec(tree$children[[i]], dataset, type.projection, name.group));      
+
+        list(project.tree(tree$children[[i]], dataset, projection.algorithm, name.group, FALSE));
       }
     }
-    #====================================================================================================            
-  }
+  } 
   
-  return(tree);
+  return(tree)
 }
 
 dist.point = function (p1, p2)
@@ -752,7 +655,7 @@ spreader = function(node, max.iteration, threshold, frac)
   return(node);
 }
 
-spread.tree.rec = function(tree, max.iteration = 20, threshold = 0.1, frac = 4.0)
+spread.tree = function(tree, parallel, max.iteration = 20, threshold = 0.1, frac = 4.0)
 {
   if(!tree$isLeave)
   {
@@ -761,43 +664,21 @@ spread.tree.rec = function(tree, max.iteration = 20, threshold = 0.1, frac = 4.0
     if(is.null(threshold) || is.na(threshold))
       threshold = 0.1;
     if(is.null(frac) || is.na(frac))
-      frac = 4.0;        
+      frac = 4.0;  
     
-    for(i in 1: length(tree$children))
-      tree$children[[i]] = spread.tree.rec(tree$children[[i]], max.iteration, threshold, frac);
+    `%myinfix%` <- ifelse(parallel, `%dopar%`, `%do%`)
+    
+    tree$children = foreach(i = 1:length(tree$children), .combine = append, .export = LIST.ENV.FUNC, .packages = LIST.ENV.PKG)%myinfix%
+    {
+      list(spread.tree(tree$children[[i]], FALSE, max.iteration, threshold, frac));
+    }  
     
     #Teste adicionado por causa do HiPP_projection_cluster
     if(!is.null(tree$children[[1]]$x))
-      tree = spreader(tree, max.iteration, threshold, frac);
+      tree = spreader(tree, max.iteration, threshold, frac);      
   }
   
   return(tree);  
-}
-
-spread.tree = function(tree, max.iteration = 20, threshold = 0.1, frac = 4.0)
-{
-  if(tree$isRoot)
-  {
-    if(is.null(max.iteration) || is.na(max.iteration))
-      max.iteration = 20;
-    if(is.null(threshold) || is.na(threshold))
-      threshold = 0.1;
-    if(is.null(frac) || is.na(frac))
-      frac = 4.0;        
-    
-    #====================================================================================================    
-    tree$children = foreach(i = 1:length(tree$children), .combine = append, .export = LIST.ENV.FUNC, .packages = LIST.ENV.PKG)%dopar%
-    {
-      list(spread.tree.rec(tree$children[[i]], max.iteration, threshold, frac));
-    }
-    #====================================================================================================        
-    
-    #Teste adicionado por causa do HiPP_projection_cluster
-    if(!is.null(tree$children[[1]]$x))
-      tree = spreader(tree, max.iteration, threshold, frac);    
-  }
-  
-  return(tree);
 }
 
 xHiPP_cluster_projection = function(dataset, qt_cluster = 0, min.item = floor(sqrt(nrow(dataset))), cluster.algorithm = "kmeans", projection.algorithm = "force", 
@@ -811,12 +692,11 @@ xHiPP_cluster_projection = function(dataset, qt_cluster = 0, min.item = floor(sq
   else
     tree$qt_min = floor(sqrt(nrow(dataset)));
   
-  tree = hierarchy(tree, dataset, qt_cluster, tree$qt_min, cluster.algorithm, name.group, summary.path = summary.path);
-  tree = project.tree(tree, dataset, projection.algorithm, name.group); 
+  tree = hierarchy(tree, dataset, qt_cluster, tree$qt_min, cluster.algorithm, name.group, TRUE, summary.path = summary.path);
+  tree = project.tree(tree, dataset, projection.algorithm, name.group, TRUE);
 
   if(spread)
-    tree = spread.tree(tree, max.iteration, threshold, frac);
-
+    tree = spread.tree(tree, TRUE, max.iteration, threshold, frac);
   if(return.tree)
     return(tree)
   else
@@ -834,25 +714,29 @@ xHiPP_projection_cluster = function(dataset, qt_cluster = 0, min.item = floor(sq
   else
     tree$qt_min = floor(sqrt(nrow(dataset)));
   
-  tree = project.tree(tree, dataset, projection.algorithm, name.group);  
+  tree = project.tree(tree, dataset, projection.algorithm, name.group, TRUE);  
   aux1 = tree2table(tree);
   aux2 = as.data.frame(aux1); 
   
-  if(length(which(colnames(dataset) == name.group[1])) > 0)
+  if(name.group[1] %in% colnames(dataset))
   {
     aux2 = cbind(aux2, dataset[, name.group[1]], stringsAsFactors = FALSE);
     colnames(aux2)[ncol(aux2)] = name.group[1];
   }  
-  if(length(which(colnames(dataset) == name.group[2])) > 0)
+  if(name.group[2] %in% colnames(dataset))
   {
     aux2 = cbind(aux2, dataset[, name.group[2]], stringsAsFactors = FALSE);
     colnames(aux2)[ncol(aux2)] = name.group[2];
+  }else
+  {
+    aux2 = cbind(aux2, dataset[, ncol(dataset)], stringsAsFactors = FALSE);
+    colnames(aux2)[ncol(aux2)] = name.group[2];    
   }
   
-  tree = hierarchy(tree, aux2, qt_cluster, tree$qt_min, cluster.algorithm, name.group, init.coord = TRUE, original.data = dataset, summary.path = summary.path);
-  
+  tree = hierarchy(tree, aux2, qt_cluster, tree$qt_min, cluster.algorithm, name.group, TRUE, init.coord = TRUE, original.data = dataset, summary.path = summary.path);
+
   if(spread)
-    tree = spread.tree(tree, max.iteration, threshold, frac);
+    tree = spread.tree(tree, TRUE, max.iteration, threshold, frac);
   if(return.tree)
     return(tree)
   else
@@ -864,10 +748,10 @@ xHiPP_from_cluster = function(json, projection.algorithm = "force", spread = TRU
   tree    = tree2table(json, by.data = TRUE);
   dataset = as.data.frame(tree$dataset);  
   tree    = tree$tree;
-  tree    = project.tree(tree, dataset, projection.algorithm, c("name", "group"));  
+  tree    = project.tree(tree, dataset, projection.algorithm, c("name", "group"), TRUE);  
   
   if(spread)
-    tree = spread.tree(tree, max.iteration, threshold, frac);
+    tree = spread.tree(tree, TRUE, max.iteration, threshold, frac);
   if(return.tree)
     return(tree)
   else
@@ -884,7 +768,7 @@ xHiPP = function(data, operation, cluster.algorithm = "kmeans", projection.algor
   QT.CORES <<- detectCores() - 1
   PROCESSING.TYPE <<- process.type
   registerDoParallel(cores = QT.CORES)
-  cl = makeCluster(QT.CORES, "PSOCK")
+  cl = makeCluster(QT.CORES, "PSOCK", outfile = "log_file.txt")
   clusterEvalQ(cl, library("mp"))
   clusterEvalQ(cl, library("cluster"))
   

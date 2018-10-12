@@ -135,7 +135,7 @@ function(input, output, session)
                 process.type = process.types$image;              
             }
           }
-
+          
           tree = xHiPP(data,
                       operation,
                       cluster.algorithm = input$cluster_algorithm,
