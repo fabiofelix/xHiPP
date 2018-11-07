@@ -167,12 +167,12 @@ var PackedTree = function(vd, s)
           
           _this.sync.hover_treemap(d, true);
           
-          var show = d.data.isLeave;
+          var force_presentation = d.data.isLeave;
                        
           if(!_this.view_data.isMediaData(d.data.name))
-            show = !d.data.isLeave && !d.data.isRoot;
+            force_presentation = !d.data.isLeave && !d.data.isRoot;
           
-          _this.view_data.show_image_tooltip(show, {name: d.data.name, alternative: d.data.summary});
+          _this.view_data.show_image_tooltip(true, {name: d.data.name, alternative: d.data.summary}, "#image_tooltip", force_presentation);
         })
         .on("mouseleave", function(d)
         {

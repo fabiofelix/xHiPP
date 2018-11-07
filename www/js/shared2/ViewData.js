@@ -128,12 +128,12 @@ var ViewData = function()
     });
     $("#modal_form").modal({backdrop: 'static', keyboard: false});      
   };
-  this.show_image_tooltip = function(show, names, wrapper)
+  this.show_image_tooltip = function(show, names, wrapper, force)
   {
     var wrapper_aux = wrapper == undefined ? "#image_tooltip" : wrapper;
     
     if(show && (names.name !== "" || names.alternative !== "") && 
-       (_this.isImage(names.name) || _this.isAudio(names.name) || !_this.isMediaData(names.name)))
+       (_this.isImage(names.name) || _this.isAudio(names.name) || force ))
     {
       var name = names.name,
           search_aux_path  = !_this.isMediaData(names.name) && names.alternative != undefined && names.alternative !== "";

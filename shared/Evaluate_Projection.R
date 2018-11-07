@@ -153,7 +153,7 @@ distance.scatterplot = function(original, projected, desc = "", show.label = TRU
   points(x, y, pch = 21, bg = "blue", col = "black")  
 }
 
-distance.histogram = function(original, projected.list, save = FALSE, prefix.file = "")
+distance.histogram = function(original, projected.list, save = FALSE, prefix.file = "", original.dist = NULL)
 {
   count = 0;
   
@@ -163,15 +163,19 @@ distance.histogram = function(original, projected.list, save = FALSE, prefix.fil
   dime = get.dimentions(count, type = 2);
 
   if(save)
-    png( paste(prefix.file, "Distance_histogram.png", sep = ifelse(prefix.file == "", "", "_")), 
-         width = 1366, height = 768);  
+    png( paste(prefix.file, "Distance_histogram.png", sep = ifelse(prefix.file == "", "", "_")),
+         width = 1366, height = 768);
   
   par(mfrow = c(dime$nrow, dime$ncol), oma = c(1, 1.5, 2, 0), mar = c(2.3, 2.5, 2.0, 0.5));
   
   if(count > 1)
     plot.new()
   
-  dist1 = dist(original, upper = FALSE)
+  dist1 = original.dist
+  
+  if(is.null(original.dist))
+    dist1 = dist(original, upper = FALSE)
+    
   hist(dist1, freq = FALSE, main = "Original", xlab = "", ylab = "", col = "red")
   lines(density(dist1), lwd = 2, lty = 2)
   start.new.line = count > 1
@@ -200,7 +204,7 @@ distance.histogram = function(original, projected.list, save = FALSE, prefix.fil
   par(mfrow = c(1, 1), oma = c(0, 0, 0, 0), mar = c(5.1, 4.1, 4.1, 2.1));
 
   if(save)
-    dev.off();  
+    dev.off();
 }
 
 plot.distance = function(original, projected.list, save = FALSE, prefix.file = "", ylab = "Projected")
@@ -399,6 +403,10 @@ plot.neighbor = function(dataset, list.vis, labels, neighbor.k, save = FALSE, pr
   row.names(p.values) = legend.names;
   row.names(h.values) = legend.names;
   
+  if(save)
+    png( paste(prefix.file, "Neighborhood2.png", sep = ifelse(prefix.file == "", "", "_")), 
+         width = 1366, height = 768);  
+  
   par(mfrow = c(1, 2), oma = c(1, 1.5, 0, 0), mar = c(2.3, 2.5, 2.0, 0.5));  
   
   if(!is.null(p.values))
@@ -407,6 +415,9 @@ plot.neighbor = function(dataset, list.vis, labels, neighbor.k, save = FALSE, pr
     boxplot(t(h.values), main = "Neighborhood Hit")
   
   par(mfrow = c(1, 1), oma = c(0, 0, 0, 0), mar = c(5.1, 4.1, 4.1, 2.1));    
+  
+  if(save)
+    dev.off()
 #============================================================================================#  
 }
 
@@ -622,7 +633,7 @@ evaluate.projection = function(dataset, labels = c("red"), seed = 1753,
     if(calc$distance.h)
     {
       cat("Plotting Distance Histogram\n")
-      distance.histogram(original.dist, list.vis, save = save)
+      distance.histogram(original = NULL, list.vis, save = save, original.dist = original.dist)
     }    
     if((calc$nhit || calc$npreservation) && !show.unique.neighbor)
     {
@@ -685,7 +696,7 @@ evaluate.HiPP = function(dataset, labels = c("red"), seed = 1753, neighbor.k = c
   list.neibor.hit = list(pca=0, mds=0, force=0, lsp=0, plmp=0, lamp=0, tsne=0);
   list.neibor.preservation = list(pca=0, mds=0, force=0, lsp=0, plmp=0, lamp=0, tsne=0);  
   
-  original.dist = dist(dataset);
+  original.dist = dist(dataset, upper = FALSE);
   
   for(i in 1:length(clustering))
   {
