@@ -1,6 +1,8 @@
 #================================================================================#
 #Set of generic functions
 #
+#Changed: 11/08/2018
+#         Added cluster.mean.error function
 #Changed: 08/13/2018
 #         Added plot.stem function
 #Changed: 08/12/2018
@@ -379,3 +381,30 @@ plot.stem = function(x, ...)
     lines(c(i, i), c(x_min, x[i]), col = "blue", lwd = 2)    
 }
 
+cluster.mean.error = function(data, clust)
+{
+  value = 0
+  means = matrix(0, nrow = 0, ncol = 3, dimnames = list(NULL, c("error", "items", "mean")))
+  
+  for(i in 1:nrow(clust$centers))
+  {
+    items = data[clust$cluster == i, ]
+    cluster.value = 0
+    
+    for(j in 1:nrow(items))
+    {
+      aux = rbind(clust$centers[i, ], items[j, ])
+      aux = dist(aux)
+      
+      cluster.value = cluster.value + as.numeric(aux)^2
+    }
+    
+    value = value + cluster.value    
+    means = rbind(means, c(cluster.value, nrow(items), cluster.value / nrow(items)))    
+    rownames(means)[nrow(means)] = paste("cluster_", i, sep = "")
+  }
+  
+  means = rbind(means, "total" = c(value, nrow(data), value / nrow(data)))
+  
+  return(means)
+}

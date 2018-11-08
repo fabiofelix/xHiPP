@@ -167,7 +167,7 @@ var PackedTree = function(vd, s)
           
           _this.sync.hover_treemap(d, true);
           
-          var force_presentation = d.data.isLeave;
+          var force_presentation = false;
                        
           if(!_this.view_data.isMediaData(d.data.name))
             force_presentation = !d.data.isLeave && !d.data.isRoot;
