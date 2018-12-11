@@ -109,11 +109,11 @@ function parse_time(date)
   return new Date(+date[2], +date[0] - 1, +date[1], +time[0], +time[1], +time[2]);  
 }
 
-function download_data(data, file_name, name_label)
+function download_data(data, file_name, name_label, column_description)
 {
   var csvContent = 
     (typeof(name_label) === "undefined" ? "" : "name,") + 
-    "X,Y" +
+    (typeof(column_description) === "undefined" ? "X,Y" : column_description) +
     (typeof(name_label) === "undefined" ? "" : ",group") + 
     "\r\n";
   

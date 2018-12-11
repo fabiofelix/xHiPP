@@ -175,8 +175,8 @@ distance.histogram = function(original, projected.list, save = FALSE, prefix.fil
   
   if(is.null(original.dist))
     dist1 = dist(original, upper = FALSE)
-    
-  hist(dist1, freq = FALSE, main = "Original", xlab = "", ylab = "", col = "red")
+
+  hist(dist1, freq = FALSE, main = ifelse(count > 1, "Original", ""), xlab = "", ylab = "", col = "red")
   lines(density(dist1), lwd = 2, lty = 2)
   start.new.line = count > 1
   
@@ -423,7 +423,11 @@ plot.neighbor = function(dataset, list.vis, labels, neighbor.k, save = FALSE, pr
 
 get.dimentions = function(qt, type = 1)
 {
-  if(type == 1)
+  if(qt < 2)
+  {
+    nrow = 1;
+    ncol = 1;    
+  }else if(type == 1)
   {
     nrow = 3;
     ncol = 3;
@@ -549,7 +553,7 @@ calc.metrics = function(dataset, data.projection, projection.name, labels, calc 
 evaluate.projection = function(dataset, labels = c("red"), seed = 1753, 
                                neighbor.k = c(1:30),
                                save = FALSE,
-                               projection = list(PCA=TRUE, MDS=TRUE, ForceScheme=TRUE, LSP=TRUE, PLMP=TRUE, LAMP=TRUE, tSNE=TRUE, HiPP=TRUE),
+                               projection = list(PCA=TRUE, MDS=TRUE, ForceScheme=TRUE, LSP=TRUE, PLMP=TRUE, LAMP=TRUE, tSNE=TRUE, HiPP=FALSE),
                                calc = list(stress=TRUE, Silhouette=TRUE, nhit=TRUE, npreservation=TRUE, distance.s=TRUE, distance.h=TRUE),
                                silhouette.file.name = NULL)
 {
@@ -647,38 +651,18 @@ evaluate.projection = function(dataset, labels = c("red"), seed = 1753,
   }
 }
 
-evaluate.original.data = function(dataset, labels = c("red"), neighbor.k = c(1:30), plot.values = TRUE)
+evaluate.original.data = function(dataset, labels = c("red"), plot.values = TRUE)
 {
   dataset = dataset[, get.numeric.columns(dataset)];
   silhouette.value = silhouette(as.numeric(labels), dist(dataset));  
   
   if(plot.values)
+  {
     plot(silhouette.value);
+    distance.histogram(dataset, NULL)
+  }  
   
   return(summary(silhouette.value)$avg.width);
-  
-  
-  # if(save)
-  # {
-  #   s = summary(silhouette.value)$avg.width;
-  #   write.table("evaluate.original.data.csv", row.names = FALSE, col.names = FALSE, sep = ",", dec = ".");
-  # }
-  # else
-  #   plot(silhouette.value);
-  
-  # pb = txtProgressBar(min = 0, max = max(neighbor.k), style = 3)    
-  # new.row.h = c();
-  # 
-  # for(j in neighbor.k)
-  # {
-  #   value = neighborhood.hit(dataset, labels, j);
-  #   new.row.h = c(new.row.h, value);
-  #   
-  #   setTxtProgressBar(pb, j)
-  # }
-  # 
-  # close(pb)
-  # plot.neighbor.aux(NULL, matrix(new.row.h, nrow = 1), NULL, save = save);  
 }
 
 

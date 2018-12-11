@@ -13,7 +13,9 @@ $(document).ready(
     $(document).on("click", "#show_point", VIS.packed.remove_circles);
     $(document).on("click", "#transparent", VIS.packed.transparent_circles); 
     $(document).on("click", "#normal", VIS.packed.add_circles); 
-    $(document).on("click", "#medoid", VIS.packed.show_img_medoid);     
+    $(document).on("click", "#medoid", VIS.packed.show_img_medoid);
+    $(document).on("click", "#cluster2csv", VIS.packed.cluster2csv);        
+    
     
     $("#userFile").fileinput({
         showPreview: false, 

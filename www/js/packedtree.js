@@ -383,5 +383,26 @@ var PackedTree = function(vd, s)
       else
         return this.style.fill;
     });  
-  }
+  };
+  this.cluster2csv = function()
+  {
+    if(_this.node_focused)
+    {
+      var items = _this.node_focused.descendants();
+      var array_data = [];
+      
+      $.each(items, 
+        function(i, obj)
+        {
+          if(obj.data.isLeave)
+          {
+            array_data.push([obj.data.name, obj.data.group]);              
+          }
+        }
+      );
+
+      if(array_data.length > 0)
+        download_data(array_data, "Cluster_xHiPP.csv", undefined, "name, group");      
+    }
+  };
 }
