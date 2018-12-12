@@ -389,20 +389,22 @@ var PackedTree = function(vd, s)
     if(_this.node_focused)
     {
       var items = _this.node_focused.descendants();
-      var array_data = [];
+      var array_data = [],
+          array_names = [];
       
       $.each(items, 
         function(i, obj)
         {
           if(obj.data.isLeave)
           {
-            array_data.push([obj.data.name, obj.data.group]);              
+            array_data.push([obj.data.x, obj.data.y]);              
+            array_names.push({name: obj.data.name, group: obj.data.group});              
           }
         }
       );
 
       if(array_data.length > 0)
-        download_data(array_data, "Cluster_xHiPP.csv", undefined, "name, group");      
+        download_data(array_data, "Cluster_xHiPP.csv", array_names);      
     }
   };
 }

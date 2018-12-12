@@ -553,7 +553,7 @@ calc.metrics = function(dataset, data.projection, projection.name, labels, calc 
 evaluate.projection = function(dataset, labels = c("red"), seed = 1753, 
                                neighbor.k = c(1:30),
                                save = FALSE,
-                               projection = list(PCA=TRUE, MDS=TRUE, ForceScheme=TRUE, LSP=TRUE, PLMP=TRUE, LAMP=TRUE, tSNE=TRUE, HiPP=FALSE),
+                               projection = list(PCA=TRUE, MDS=TRUE, ForceScheme=TRUE, LSP=TRUE, PLMP=TRUE, LAMP=TRUE, tSNE=TRUE, HiPP=TRUE),
                                calc = list(stress=TRUE, Silhouette=TRUE, nhit=TRUE, npreservation=TRUE, distance.s=TRUE, distance.h=TRUE),
                                silhouette.file.name = NULL)
 {
