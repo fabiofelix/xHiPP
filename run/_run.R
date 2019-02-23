@@ -9,7 +9,7 @@ pkg.dependences = function()
 {
   p = installed.packages()
   p = rownames(p)
-  needed.packages = c("jsonlite", "mp", "doParallel", "tm", "topicmodels", "SnowballC", "shiny", "mime",
+  needed.packages = c("jsonlite", "mp", "umap", "doParallel", "tm", "topicmodels", "SnowballC", "shiny", "mime",
                       "stringr")
   
   for(i in 1:length(needed.packages))
