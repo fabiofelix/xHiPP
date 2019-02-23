@@ -27,9 +27,6 @@ require(cluster)
 require(mp)
 require(umap)
 
-source("~/Documentos/shared_src/R/utils.R");
-# source("~/Documents/shared_src/R/utils.R");
-
 stress = function(X, Y)  
 {
   if(is.null(X) || is.na(X) || is.null(Y) || is.na(Y) )
