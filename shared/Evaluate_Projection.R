@@ -25,6 +25,10 @@
 
 require(cluster) 
 require(mp)
+require(umap)
+
+source("~/Documentos/shared_src/R/utils.R");
+# source("~/Documents/shared_src/R/utils.R");
 
 stress = function(X, Y)  
 {
@@ -553,19 +557,19 @@ calc.metrics = function(dataset, data.projection, projection.name, labels, calc 
 evaluate.projection = function(dataset, labels = c("red"), seed = 1753, 
                                neighbor.k = c(1:30),
                                save = FALSE,
-                               projection = list(PCA=TRUE, MDS=TRUE, ForceScheme=TRUE, LSP=TRUE, PLMP=TRUE, LAMP=TRUE, tSNE=TRUE, HiPP=TRUE),
+                               projection = list(PCA=TRUE, MDS=TRUE, ForceScheme=TRUE, LSP=TRUE, PLMP=TRUE, LAMP=TRUE, tSNE=TRUE, UMAP=TRUE, HiPP=FALSE),
                                calc = list(stress=TRUE, Silhouette=TRUE, nhit=TRUE, npreservation=TRUE, distance.s=TRUE, distance.h=TRUE),
                                silhouette.file.name = NULL)
 {
   dataset = dataset[, get.numeric.columns(dataset)];
   
-  list.projection = c("PCA", "MDS", "ForceScheme", "LSP", "PLMP", "LAMP", "tSNE", "HiPP");  
-  list.vis    = list(PCA=NULL, MDS=NULL, ForceScheme=NULL, LSP=NULL, PLMP=NULL, LAMP=NULL, tSNE=NULL, HiPP=NULL);
-  list.stress = list(PCA=0, MDS=0, ForceScheme=0, LSP=0, PLMP=0, LAMP=0, tSNE=0, HiPP=0);
-  list.silhouette = list(PCA=NULL, MDS=NULL, ForceScheme=NULL, LSP=NULL, PLMP=NULL, LAMP=NULL, tSNE=NULL, HiPP=NULL);
-  list.avg.silhouette = list(PCA=0, MDS=0, ForceScheme=0, LSP=0, PLMP=0, LAMP=0, tSNE=0, HiPP=0);
-  list.neibor.hit = list(PCA=0, MDS=0, ForceScheme=0, LSP=0, PLMP=0, LAMP=0, tSNE=0, HiPP=0);
-  list.neibor.preservation = list(PCA=0, MDS=0, ForceScheme=0, LSP=0, PLMP=0, LAMP=0, tSNE=0, HiPP=0);
+  list.projection = c("PCA", "MDS", "ForceScheme", "LSP", "PLMP", "LAMP", "tSNE", "UMAP", "HiPP");  
+  list.vis    = list(PCA=NULL, MDS=NULL, ForceScheme=NULL, LSP=NULL, PLMP=NULL, LAMP=NULL, tSNE=NULL, UMAP=NULL, HiPP=NULL);
+  list.stress = list(PCA=0, MDS=0, ForceScheme=0, LSP=0, PLMP=0, LAMP=0, tSNE=0, UMAP=0, HiPP=0);
+  list.silhouette = list(PCA=NULL, MDS=NULL, ForceScheme=NULL, LSP=NULL, PLMP=NULL, LAMP=NULL, tSNE=NULL, UMAP=NULL, HiPP=NULL);
+  list.avg.silhouette = list(PCA=0, MDS=0, ForceScheme=0, LSP=0, PLMP=0, LAMP=0, tSNE=0, UMAP=0, HiPP=0);
+  list.neibor.hit = list(PCA=0, MDS=0, ForceScheme=0, LSP=0, PLMP=0, LAMP=0, tSNE=0, UMAP=0, HiPP=0);
+  list.neibor.preservation = list(PCA=0, MDS=0, ForceScheme=0, LSP=0, PLMP=0, LAMP=0, tSNE=0, UMAP=0, HiPP=0);
   
   original.dist = dist(dataset);
   show.unique.neighbor = (length(neighbor.k) > 0 & length(neighbor.k) == 1);
@@ -592,6 +596,8 @@ evaluate.projection = function(dataset, labels = c("red"), seed = 1753,
         list.vis[[list.projection[i]]] = lamp(dataset)
       else if(list.projection[i] == "tSNE")
         list.vis[[list.projection[i]]] = tSNE(dataset)
+      else if(list.projection[i] == "UMAP")
+        list.vis[[list.projection[i]]] = umap(dataset)$layout      
       else if(list.projection[i] == "HiPP")
         list.vis[[list.projection[i]]] = HiPP(dataset, return.tree = FALSE, operation = "cluster_projection");
       
@@ -721,5 +727,5 @@ evaluate.HiPP = function(dataset, labels = c("red"), seed = 1753, neighbor.k = c
 }  
 
 # evaluate.original.data(iris[, 1:4], iris[, 5])
-# evaluate.projection(iris[, 1:4], iris[, 5], calc = list(stress=TRUE, Silhouette=TRUE, nhit=TRUE, npreservation=TRUE, distance.s=TRUE, distance.h=TRUE), projection = list(PCA=TRUE, MDS=TRUE, ForceScheme=TRUE, LSP=TRUE, PLMP=TRUE, LAMP=TRUE, tSNE=TRUE, HiPP=FALSE))
+# evaluate.projection(iris[, 1:4], iris[, 5], calc = list(stress=TRUE, Silhouette=TRUE, nhit=TRUE, npreservation=TRUE, distance.s=TRUE, distance.h=TRUE), projection = list(PCA=TRUE, MDS=TRUE, ForceScheme=TRUE, LSP=TRUE, PLMP=TRUE, LAMP=TRUE, tSNE=TRUE, UMAP=TRUE,  HiPP=FALSE))
 

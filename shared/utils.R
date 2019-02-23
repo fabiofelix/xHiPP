@@ -1,6 +1,8 @@
 #================================================================================#
 #Set of generic functions
 #
+#Changed: 09/16/2018
+#         Corrected coalesce to always test null ad na 
 #Changed: 11/08/2018
 #         Added cluster.mean.error function
 #Changed: 08/13/2018
@@ -191,10 +193,12 @@ PAA = function(values, window.size = 100, by.median = FALSE, stand = TRUE)
   return(centers);  
 }
 
-#Não sei que nome dar pra essa função
-abc = function(value)
+coalesce = function(value)
 {
-  return(ifelse(is.null(value) || is.na(value), 0, value))
+  if(is.null(value) || is.na(value))
+    return(0)
+  else 
+    return(value)
 }
 
 wav2flac.dir = function(source.path, reverse.param, target.path = source.path)
