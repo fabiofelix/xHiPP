@@ -1,129 +1,125 @@
 # xHiPP
 
 This code is a new design for Hierarchical Point Placement Strategy (HiPP), called
-eXtend HiPP (xHiPP). xHiPP is a Multidimensional Projection capable of present several levels
-of data details. The paper of xHiPP process description is available on the [SIBGRAPI Digital Library](http://urlib.net/8JMKD3MGPAW/3RPBD6H)
+eXtend HiPP (xHiPP). xHiPP is a Multidimensional Projection technique capable of present several levels
+of data details. The paper of xHiPP process description is available on the [SIBGRAPI Digital Library](http://urlib.net/8JMKD3MGPAW/3RPBD6H).
 
 ## Getting Started
 
-These instructions will get you a copy of the project to run on your local machine for development and testing purposes. 
+These codes and instructions will get you a copy of the project to run on your local machine for development and testing purposes.
 
 ### Prerequisites
 
 If you are using Linux, verify whether the following packages are installed:
 
-* [GCC](https://gcc.gnu.org/) -  C/C++ and Fortran Compiler
-* [LAPCK](http://www.netlib.org/lapack/) - Standard software library for numerical linear algebra
-* [BLAS](http://www.netlib.org/blas/) - Set of low-level routines for common linear algebra operations
-* [Libxml2](http://xmlsoft.org/) - Library for parsing XML documents
-* [GSL](https://www.gnu.org/software/gsl/) - Library for numerical computations in applied mathematics and science
+* [GCC](https://gcc.gnu.org/) -  C/C++ and Fortran Compiler;
+* [LAPCK](http://www.netlib.org/lapack/) - Standard software library for numerical linear algebra;
+* [BLAS](http://www.netlib.org/blas/) - Set of low-level routines for common linear algebra operations;
+* [Libxml2](http://xmlsoft.org/) - Library for parsing XML documents;
+* [GSL](https://www.gnu.org/software/gsl/) - Library for numerical computations in applied mathematics and science.
 
-These packages will be necessary to install R packages. After their installation, you will be able to install the next things
+These packages will be necessary to install R packages. After their installation, you will be able to install the following things.
 
-* [R](https://www.r-project.org/) - Download and install the R latest version
-* [RStudio](https://www.rstudio.com/products/rstudio/download/) - Download and install the RStudio latest version
-* [R packages](https://www.r-bloggers.com/installing-r-packages/) - Open RStudio and follow the previous link instructions to install these packages:  "jsonlite", "mp", "umap", "doParallel", "tm", "topicmodels", "SnowballC", "shiny", "mime", "stringr". If necessary, change the R repositories to install packages.
+* [R](https://www.r-project.org/) - Download and install the R latest version;
+* [RStudio](https://www.rstudio.com/products/rstudio/download/) - Download and install the RStudio latest version (just to help users that do not know R);
+* [R packages](https://www.r-bloggers.com/installing-r-packages/) - Open RStudio and follow the previous link instructions to manually install the following packages:  "jsonlite", "mp", "umap", "doParallel", "tm", "topicmodels", "SnowballC", "shiny", "mime", "stringr". If necessary, change the R repositories to install packages (just for Windows users) .
 
-Tests that worked were performed with the following R versions: 3.3.1, 3.3.3 and 3.4.4. I tested with Slackware, Ubuntu, Mint and Windows 10.
+> obs.: The run.R script has a routine to automatically install R packages. Sadly, on Windows, this routine does not 
+work properly. That's why one needs to do it manually.
 
-Take care whether all these packages were really installed. If not, xHiPP will not run.
 
-```
-obs.: The run.R script has a routine to automatically install the R packages. Sadly, in Windows, this routine 
-does not work. That's why the user needs to do it manually.
-```
+Take care whether all these packages were installed. If not, xHiPP will not run.
+
+I have performed tests that worked with the following R versions: 3.3.1, 3.3.3, 3.4.4 and 3.6.1. I tested on Slackware 14.2, Ubuntu 14.04, Mint 18.2 and Windows 10.
 
 ### Installing
 
-```
-After downloading and unzipping xHiPP directory, copy from run/ directory files: run.R, 
-RUN_SERVER and RUN_CLIENT.  
+* After downloading and unzipping xHiPP directory, copy from run/ directory the scripts: run.R, 
+RUN_SERVER and RUN_CLIENT. It is good to copy these files to another place, because when you install a new version they will be replaced; 
 
-obs.: If you are using Windows, please take .bat files. If you are using Unix-like, take .sh ones
-```
+> obs.: If you are using Windows, please take .bat files. If you are using Unix-like, take .sh ones.
 
-```
-Edit xHIPP.PATH variable into run.R to your correspondent xHiPP directory path. If you are using Windows, 
-always use DOUBLE backslashes.  
-```
+* Edit xHIPP.PATH variable into run.R script to your correspondent xHiPP directory path;
 
-```
-Edit RUN_SERVER_PATH variable into RUN_SERVER to your correspondent run.R path. 
-```
+> obs.: If you are using Windows, always use DOUBLE backslashes on the paths. 
 
-```
-If it is necessary, edit USE_CHROME and SERVER_TCP_PORT variables into RUN_CLIENT to your desired 
-configuration. 
+* Edit RUN_SERVER_PATH variable into RUN_SERVER script to your correspondent run.R path; 
 
-obs.: The value of SERVER_TCP_PORT must be equal to the SERVER.TCP.PORT inside the run.R file.
-```
+* Edit USE_CHROME and SERVER_TCP_PORT variables into RUN_CLIENT script to set your desired configuration. 
 
-## Running tests
+> obs.: The value of SERVER_TCP_PORT must be equal to the SERVER.TCP.PORT inside the run.R file.
 
-First and foremost, execute the RUN_SERVER script. After this, just execute RUN_CLIENT to open your browse showing xHiPP. 
+## Running
 
-After loading, a user can interact with groups on the left and with treemap on the right, zooming in and out the structure. Moreover, there are some options to remove group boundary, present transparent groups or show some group summarization.  
+First and foremost, execute the RUN_SERVER script. After this, execute RUN_CLIENT to open your web browser with the xHiPP main view.
 
-A user can see information inside data points in different ways, depending on the data type (text, image, audio or other types of data).
+After starting, one can load data, interacts with groups on the left side and with treemap on the right side by zooming in and out the structure. Moreover, there are options to show groups summarization, present transparent groups or points without groups, to save items from a group focused and to visualize data related to points.
 
-**DEPENDING ON DATA AND ATTRIBUTE QUANTITY, AND CLUSTERING/PROJECTION ALGORITHMS CHOSEN, THE PROCESSING TIME CAN 
-TAKE A LOT. PLEASE, BE CAREFUL WITH K-MEDOID ALGORITHM, BECAUSE OF ITS COMPLEXITY TIME.**
+> Depending on the number of data items or data attributes, one should sampling items or select features before to execute xHiPP.
+In my tests, ~5.000 items and ~500 features were the higher limits. As well as, be careful with k-medoid algorithm, because of its complexity time. 
+
+> xHiPP will extract topics for text datasets. Thus, the processing time is influenciated by this process. Fortunately, the process is executed just 
+one time for each text dataset.
 
 ### File format (csv)
 
-It is possible to load .csv files. The files must contain a column named as 'name' (identification column) and a column named as 'group' (data labels). If data are not labeled,
-all items in column 'group' will have the same value. Column 'group' accept any value type (integer, string, etc.)
+It is possible to load .csv files. Files must contain a column named as **name** (identification column) and a column named as **group** (data labels). If data are not labeled,
+all items in column **group** should have the same value. Column **group** accept any value type (integer, string, etc.)
 
-If the column 'name' has values that indicate file names, the extension of files will define how data is presented by xHiPP. 
+If your file has no **name** column, a default identifier will be generated for your data items.
+If your file has no **group** column, the last one will be used as the data label. Text datasets
+are one exception. In this case, the topics generated will serve as data labels.
+If the column **name** has values that indicate file names, the extension defines how xHiPP presents data, as following 
 
 * .txt to text files;
 * .png | .jpg | .jpeg to image files;
-* .mp3 | .wav to audio files;
+* .mp3 | .wav | .flac to audio files;
+* Other extensions or data without information about extension will be presented as ordinary data.
 
-Other file types or data without information about extension will be presented as ordinary data.
+> obs.: CSV files of text dataset can contain columns named as **name** and **group** that are linked with text word 
+frequency. Please, rename these columns to xHiPP correctly encounter columns **name** and **group** specified above. 
 
-obs.: CSV files of text dataset can contain columns named as 'name' and 'group' that are linked with text word frequency. Please, rename these columns to xHiPP correctly encounter 
-columns 'name' and 'group' especified above. For instance,
 
 | name  | word1 | word2 | name.1 | word3 | word4 | group.1 | word5 | group |
 | ----- | ----- | ----- | ------ | ----- | ----- | ------- | ----- | ----- |
 | file1.txt | 0.3 | 0.5 | 0.4 | 0.2 | 0.1 | 0 | 0 | news |
 
-obs.: Please, if your .csv file doesn't have the column named 'group', the last column of the file will be used as the data label.
 
 ### File format (json)
 
-When a .csv file is processed, xHiPP save a .json with the tree structure in www/data/json to future use. Therefore, user can load preprocessed structures with xHiPP.
-For instance, if one wants to change palette color, just change colors and load preprocessed file (json), instead of reprocess entire datset (csv).
+When a .csv file is processed, xHiPP save a .json with the tree structure in *www/data/json* to future use. Therefore, user can load preprocessed structures with xHiPP.
+For instance, if one wants to change palette color, just change colors and load preprocessed file (json), instead of reprocessing entire dataset (csv).
 
 ### Directory structure
 
-Files specified in column 'name' of the .csv file will be searched inside www/data in the directories audio, img or text. 
+Files specified in column **name** of the .csv will be searched inside *www/data* in the subdirectories audio, img or text. 
 
-Audio files will be presented with respective spectrograms whether the audio and the corresponded image stay in the audio directory (e.g. sound.mp3 and sound.png are in www/data/audio directory). If just one of them (audio or image) is in the audio directory,
-just it will be presented to the user.
+Audio files will be presented with respective spectrograms whether the audio and the corresponded image stay in the audio directory (e.g. sound.mp3 and sound.png are inside *www/data/audio*). 
+If just one of them (audio or image) is inside the directory, it will be presented to the user.
 
 ### Data presentation
 
-Depending on the value of 'name' column in .csv file, data will be presented in some forms. When a user clicks in
-data points:
+When a user clicks on data points:
 
-* Texts are presented for observation;
-* Images are presented and a user can use arrow keys from keyboard to navigate in group images. Just images from the current group focused are shown;
-* Audio is presented to play;
-* To other data types, data attribute values are presented.
+* Texts are presented for reading;
+* Images are presented and a user can use arrow keys from keyboard to navigate in other group images. Just images from the current group focused are shown;
+* Audio is presented in a player with basic functions (forward, play/pause, backward) and equalizer controls. Beyond that, mouse hover on audio track shows time and
+a mouse click can forward, and backward;
+* Other data types will present data attribute values.
+
+Associated with the hierarchical structure, xHiPP also presents a treemap, to help users visualize the distribution of data/labels inside the dataset.
 
 To summarize data groups:
 
 * Groups are colored with the predominant color (label) inside them;
-* Text groups could present text topics from their text items. On the right of visualization, a WordCloud from group words are presented;  
-* Image groups could present medoid images;
-* Audio groups could present spectrogram images from medoid item;
-* To other data types, when mouse hover, images with a heatmap representing attribute values distribution.
+* Text groups can present text topics from their items. On the right of visualization, a WordCloud from group words are presented;
+* Image groups can present medoid images;
+* Audio groups can present spectrogram images from medoid item;
+* Other data types, when mouse hover, show images with a heatmap to represent attribute values distribution.
 
 ### Cluster exportation
 
-Users can export a CSV file with the current cluster items. The file contains information as id, group, and position generated by 
+Users can export a .csv file with the current cluster items. The file contains information as id, group, and position generated by 
 projection as following
 
 | id  | X | Y | group |
@@ -136,15 +132,19 @@ projection as following
 
 ![xHiPP toolbox](img/tools.png)
 
-### Some data visions and summarization
+### Views
 
-![xHiPP toolbox](img/visions.png)
+![xHiPP main visions](img/visions.png)
 
-### Image summarization
+### Data visualization
 
-![xHiPP toolbox](img/medoids.png)
+![xHiPP data visualization](img/data.png)
 
-### Text summarization
+### Summarization
 
-![xHiPP toolbox](img/text.png)
+![xHiPP general summarization](img/general.png)
+
+![xHiPP medoid summarization](img/medoids.png)
+
+![xHiPP text summarization](img/text.png)
 

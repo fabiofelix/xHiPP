@@ -31,7 +31,8 @@ $(document).ready(
     //Adicionado por causa de uma modificação no shiny.js this.makeRequest('uploadEnd'... que limpa o valor do input
     $("#userFile").change(function(){ FILE_NAME = $("#userFile").val(); });
     
-    $("#show_values").tooltip({html: true, title: $("#my-tooltip").html(), placement: "bottom", tip: "my-tooltip" });
+    $("#list_label").tooltip({html: true, title: $("#label-tooltip").html(), placement: "bottom", tip: "label-tooltip" });
+    $("#show_values").tooltip({html: true, title: $("#info-tooltip").html(), placement: "bottom", tip: "info-tooltip" });
 
     var config = [
       {button: "#order_button",      source: ".order_values",      target: "#order",                default_value: "cluster_projection"},
@@ -163,7 +164,7 @@ var Vis = function()
   this.treemap   = new Tree_Map(this.view_data, this.sync);
   this.cloud     = new Word_Cloud();
   this.palette   = new ColorPalette();
-  this.palette.create_options("#color_palette", "Color/Group");
+  this.palette.create_options("#color_palette", "");
   this.tree_height = 0;
   
   this.sync.packedtree = this.packed;
@@ -178,7 +179,9 @@ var Vis = function()
 //cf. functioins.js
     _this.packed.load(data, config_svg("#chart_left"));
     _this.treemap.load(data, config_svg("#chart_treemap"));
-    _this.cloud.load(data, config_svg("#chart_word_cloud"), config_svg("#chart_topic_cloud"));          
+    _this.cloud.load(data, config_svg("#chart_word_cloud", $("#chart_treemap").height()));
+    
+//     _this.cloud.load(data, config_svg("#chart_word_cloud"));
   };
   this.load_groups = function(tree)
   {
@@ -195,7 +198,7 @@ var Vis = function()
     
     _this.palette.load(groups);  
     
-    $("#list_group").html("");
+    $("#label-tooltip .tooltip-inner").html("");
     
     for(var i = 0; i < groups.length; i++)
     {
@@ -203,8 +206,10 @@ var Vis = function()
       var link = $("<a>").html(groups[i])
                         .css("color", _this.palette.get_color(groups[i]))
                         .css("pointer-events", "none");
-      $("#list_group").append(li.append(link));
+      $("#label-tooltip .tooltip-inner").append(li.append(link));
     }
+    
+    $("#list_label").attr("data-original-title", $("#label-tooltip").html());
   };
   this.show_values = function(node)
   {
@@ -227,7 +232,7 @@ var Vis = function()
     if(node.data.isRoot)
       $("#qt_min").html(node.data.qt_min);
     
-    $("#show_values").attr("data-original-title", $("#my-tooltip").html());
+    $("#show_values").attr("data-original-title", $("#info-tooltip").html());
   };
   this.fill_obj = function(obj, transparent, treemap)
   {

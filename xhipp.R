@@ -29,6 +29,7 @@
 require(jsonlite);
 require(cluster);
 require(mp);
+require(umap);
 require(doParallel);
 source("shared/utils.R");
 # source("~/Documentos/shared_src/R/utils.R");
@@ -43,8 +44,9 @@ LIST.ENV.FUNC <- c("add.fields","adjust.coordinate","calc.metrics","create.node"
              "hclust.centroid","hierarchy", "move.node","padding",
              "project.tree", "split","spread.tree",
              "spreader","table2tree","tree2table", "get.numeric.columns",
-             "get.text.words", "PROCESSING.TYPE", "process.types", "save.summary", "norm.stand", "LIST.ENV.FUNC", "LIST.ENV.PKG");
-LIST.ENV.PKG <- c("mp", "cluster");
+             "get.text.words", "PROCESSING.TYPE", "process.types", "save.summary", "norm.stand", "LIST.ENV.FUNC", "LIST.ENV.PKG",
+             "adjust.path");
+LIST.ENV.PKG <- c("mp", "cluster", "doParallel", "umap");
 
 hclust.centroid = function(index.cluster, dataset, clusters) 
 {
@@ -407,8 +409,8 @@ save.summary = function(tree, dataset, name.group, summary.path, original.data)
     }
     
     file.name = paste("group_summary", stringr::str_pad(count, 3, side = "left", pad = "0"), ".png", sep = "")
-    
-    png(paste(summary.path, file.name, sep = "/"), width = 830, height = 768);
+
+    png(adjust.path(file.path(summary.path, file.name)), width = 830, height = 768);
     heatmap(as.matrix(dataset[, list.columns]), scale = "none", 
             Rowv = NA, Colv = NA, 
             labRow = "", labCol = "", 
@@ -537,7 +539,9 @@ project.tree = function(tree, dataset, projection.algorithm, name.group, paralle
       else if(projection.algorithm == "plmp")
         vis = plmp(padding(dataset_aux, 10))
       else if(projection.algorithm == "tsne")
-        vis = tSNE(padding(dataset_aux, 2));
+        vis = tSNE(padding(dataset_aux, 2))
+      else if(projection.algorithm == "umap")
+        vis = umap(padding(dataset_aux, 15))$layout; 
     }else
     {
       dataset_aux = get.data.center(tree, dataset, name.group);

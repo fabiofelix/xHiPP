@@ -1,6 +1,8 @@
 #================================================================================#
 #Functions to evaluate Multidimentional projections
 #             
+#Changed: 08/01/2019
+#         Added option to save projection results in .csv file
 #Changed: 05/01/2018
 #         Added distance.histogram function
 #Changed: 03/23/2018
@@ -26,6 +28,9 @@
 require(cluster) 
 require(mp)
 require(umap)
+
+# source("~/Documentos/shared_src/R/utils.R");
+# source("~/Documents/shared_src/R/utils.R");
 
 stress = function(X, Y)  
 {
@@ -556,7 +561,8 @@ evaluate.projection = function(dataset, labels = c("red"), seed = 1753,
                                save = FALSE,
                                projection = list(PCA=TRUE, MDS=TRUE, ForceScheme=TRUE, LSP=TRUE, PLMP=TRUE, LAMP=TRUE, tSNE=TRUE, UMAP=TRUE, HiPP=FALSE),
                                calc = list(stress=TRUE, Silhouette=TRUE, nhit=TRUE, npreservation=TRUE, distance.s=TRUE, distance.h=TRUE),
-                               silhouette.file.name = NULL)
+                               silhouette.file.name = NULL,
+                               save.projection = TRUE)
 {
   dataset = dataset[, get.numeric.columns(dataset)];
   
@@ -598,6 +604,10 @@ evaluate.projection = function(dataset, labels = c("red"), seed = 1753,
       else if(list.projection[i] == "HiPP")
         list.vis[[list.projection[i]]] = HiPP(dataset, return.tree = FALSE, operation = "cluster_projection");
       
+      if(save.projection)
+        write.table(list.vis[[list.projection[i]]], paste(list.projection[i], ".csv", sep = ""), 
+                    quote = FALSE, dec = ".", sep = ",", row.names = FALSE)  
+
       metrics = calc.metrics(dataset, list.vis[[list.projection[i]]], list.projection[i], labels, calc);
       list.stress[[list.projection[i]]] = metrics$stress.value;
       list.silhouette[[list.projection[i]]] = metrics$silhouette.value;

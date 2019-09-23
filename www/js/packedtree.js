@@ -161,7 +161,8 @@ var PackedTree = function(vd, s)
         .on("mouseover", function(d)
         {
           d3.select(this).moveToFront();  
-          
+
+//TODO: criar uma classe css          
           this.style.stroke      = "#000";
           this.style.strokeWidth = 1.5;    
           
@@ -176,6 +177,7 @@ var PackedTree = function(vd, s)
         })
         .on("mouseleave", function(d)
         {
+//TODO: criar uma classe css
           this.style.stroke      = "#646464";
           this.style.strokeWidth = 0.5;
 
@@ -247,7 +249,7 @@ var PackedTree = function(vd, s)
     else
       return _this.sync.fill_obj(d);      
   };
-  this.adjust_circles = function(transition, last_focus)
+  this.adjust_circles = function(last_focus)
   {
     if(_this.viewing_state != View_States.transparent)
     {
@@ -271,7 +273,7 @@ var PackedTree = function(vd, s)
     {
       var parents = _this.node_focused.ancestors();
       
-      transition.selectAll("circle")
+      d3.selectAll("circle")
         .style("fill", function(d) 
         { 
           if(d === _this.node_focused || parents.indexOf(d) > -1)
@@ -296,7 +298,7 @@ var PackedTree = function(vd, s)
           return function(t) { _this.zoomTo(inter(t), svg); };
         });
                 
-    _this.adjust_circles(transition, last_focus);
+    _this.adjust_circles(last_focus);
     
     transition.selectAll("text")
       .filter(function(d) { return d.parent === _this.node_focused || this.style.display === "inline"; })
@@ -332,7 +334,7 @@ var PackedTree = function(vd, s)
     d3.selectAll("circle")
     .style("visibility", function(d)
     {
-      return d.depth >= 2 ? "hidden" : "visible";
+      return d.depth >= 2 ? "hidden" : "visible"; //deixa visíveis a raiz (depth = 0) e seus filhos (depth = 1) 
     })
     .style("fill", function(d) 
     { 
@@ -366,23 +368,28 @@ var PackedTree = function(vd, s)
       if(d.children)
         return _this.sync.fill_obj(d, true);
       else
-        return this.style.fill;    
-      
+        return this.style.fill;   
     });
   };
   this.show_img_medoid = function ()
   {
-    _this.add_circles();
-    _this.viewing_state = View_States.medoid;
+    var circles = d3.selectAll("circle").filter(function(d) { 
+      return d.data.isLeave && (_this.view_data.isImage(d.data.name) || _this.view_data.isAudio(d.data.name)); 
+    });    
     
-    d3.selectAll("circle")
-    .style("fill", function(d) 
-    { 
-      if(!d.data.isRoot && !d.data.isLeave)
-        return _this.get_fill_group(d);
-      else
-        return this.style.fill;
-    });  
+    if(circles._groups[0].length > 0)
+    {
+      _this.add_circles();
+      _this.viewing_state = View_States.medoid;      
+      d3.selectAll("circle")
+      .style("fill", function(d) 
+      { 
+        if(!d.data.isRoot && !d.data.isLeave)
+          return _this.get_fill_group(d);
+        else
+          return this.style.fill;
+      });        
+    }  
   };
   this.cluster2csv = function()
   {

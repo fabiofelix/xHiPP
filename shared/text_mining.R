@@ -197,14 +197,17 @@ extract.tree.topics.new = function(tree, text.path, topics = NULL, data = NULL, 
 {
   if(tree$isRoot)
   {
-    if(file.exists(file.path(text.path, "topics_hippTree.csv")))
-      topics = read.csv(file.path(text.path, "topics_hippTree.csv"))
+    text.path = adjust.path(text.path)
+    path      = adjust.path(file.path(text.path, "topics_hippTree.csv"))
+    
+    if(file.exists(path))
+      topics = read.csv(path)
     else
     {
       p = preprocess.text(text.path);
       topics = extract.topic.terms(p$term.matrix, qt.topics = tree$qt_cluster);
       # topics = extract.topic.tfidf(p$term.matrix);
-      write.csv(topics, file.path(text.path, "topics_hippTree.csv"), row.names = FALSE);
+      write.csv(topics, path, row.names = FALSE);
     }
     
     # name.index = which(colnames(data) == "name");

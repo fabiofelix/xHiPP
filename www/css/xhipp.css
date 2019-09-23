@@ -1,0 +1,183 @@
+#chart
+{
+  position: absolute;
+  width: 100%;
+  height: 90%;   
+  margin: 5px 0px 0px 0px;
+  padding: 0px 5px 0px 5px;
+}
+
+#tabs a
+{
+  padding: 0;
+}
+
+#label-tooltip > .tooltip.bottom .tooltip-inner 
+{
+  background-color: #f8f8f8;
+}
+
+#label-tooltip > .tooltip.bottom .tooltip-arrow 
+{
+  border-bottom-color: #f8f8f8;
+}
+
+.header 
+{
+  margin: 0px 0px 0px 0px;
+  padding-left: 5px;
+  padding-right: 5px; 
+  width: 100%;
+}  
+
+.inner-chart
+{
+  height: 100%;
+  padding: 0px;
+  margin: 0px;
+}
+
+.inner-chart-50
+{
+  width: 50%;
+}
+
+.inner-chart-left
+{
+  padding-right: 5px;
+}
+
+.inner-chart-right
+{
+  padding-left: 5px;
+}
+
+.modal-loader
+{
+  width: 100%;
+  height: 100%;
+  position: absolute;  
+}
+
+.modal-loader img
+{
+  position: relative;
+  margin-top: 15%;
+  margin-left: 45%;
+  width: 128px;
+  height: 128px;
+}
+
+.adjust-first-column
+{
+  padding-left: 0px;
+  padding-right: 0px;
+  margin-left: 0px;
+  margin-top: 5px;
+  height: 32px;
+  width: auto;
+}
+
+.adjust-select-file
+{
+  width: 620px;
+  min-width: 180px;
+  max-width: 620px;  
+}
+
+.adjust-column
+{
+  padding-right: 0px;
+  width: auto;
+  height: 32px;
+  margin-top: 5px;
+}
+
+.adjust-button
+{
+  padding-left: 4px;
+}
+
+.adjust-alert
+{
+  padding: 0px;
+  margin: 6px 0px 0px 5px;
+}
+
+.adjust-row
+{
+  margin: 8px 0px 0px 0px;
+  padding: 0px;
+  border: 0px;
+}
+
+.adjust-input
+{
+  width: 85px;
+}
+
+.adjust-space
+{
+  margin-right:60px;
+}
+
+.adjust-nav-tabs
+{
+  height: 20px;
+  border-bottom: none;
+}
+
+.adjust-tab
+{
+  height: 97.7%;
+}
+
+.node 
+{
+  cursor: pointer;
+  stroke: #646464;
+  stroke-width: 0.5px;    
+}
+
+.node:hover 
+{
+  stroke: #000;
+  stroke-width: 1.5px;
+}
+
+.node--hover rect 
+{
+  stroke: #000;
+  stroke-width: 2.5;
+}
+
+.label {
+  font: 11px "Helvetica Neue", Helvetica, Arial, sans-serif;
+  text-anchor: middle;
+  text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, -1px 0 0 #fff, 0 -1px 0 #fff;
+}
+
+.label, .node--root
+{
+  pointer-events: none;
+}
+
+@media (max-width:1376px) 
+{
+  #chart
+  {
+    height: 85%;   
+  }  
+  .adjust-column
+  {
+    padding-left: 1px;
+  }
+  .adjust-select-file
+  {
+    width: 30px;
+  }
+  .adjust-tab
+  {
+    height: 96.5%;
+  }  
+}
