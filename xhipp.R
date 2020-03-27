@@ -33,9 +33,7 @@ require(cluster);
 require(mp);
 require(umap);
 require(doParallel);
-# source("shared/utils.R");
-source("~/Documentos/shared_src/R/utils.R");
-# source("~/Documents/shared_src/R/utils.R");
+source("shared/utils.R");
 
 process.types = list(ordinary = 0, text = 1, image = 2, audio = 3);
 QT.CORES <- 1;
