@@ -1,6 +1,8 @@
 #================================================================================#
 #Implementation of xHiPP algorithm
 #
+#Changed: 03/27/2020
+#         Fixed error: seed value was not used
 #Changed: 10/12/2018
 #         Fixed error: shiny error when using threads to process projection
 #         Fixed error: tests to know whether a specific column ('name' or 'group') exists 
@@ -31,8 +33,8 @@ require(cluster);
 require(mp);
 require(umap);
 require(doParallel);
-source("shared/utils.R");
-# source("~/Documentos/shared_src/R/utils.R");
+# source("shared/utils.R");
+source("~/Documentos/shared_src/R/utils.R");
 # source("~/Documents/shared_src/R/utils.R");
 
 process.types = list(ordinary = 0, text = 1, image = 2, audio = 3);
@@ -318,6 +320,8 @@ split = function(node, dataset, cluster.algorithm, qt_cluster,  name.group, init
       columns.aux   = get.numeric.columns(original.data, name.group);
     }  
 
+    set.seed(SEED)
+    
     if(cluster.algorithm == "kmeans" ||  !(cluster.algorithm %in% c("kmeans", "kmedoid", "hclust")))
       clust = kmeans(dataset_aux[, list_columns], qt_cluster, iter.max = 15)
     else if(cluster.algorithm == "kmedoid")
@@ -522,6 +526,8 @@ project.tree = function(tree, dataset, projection.algorithm, name.group, paralle
 {
   if(!is.null(tree) && !is.null(dataset))
   {
+    set.seed(SEED)
+    
     if(tree$children[[1]]$isLeave)
     {
       dataset_aux = dataset[get.index(tree), get.numeric.columns(dataset, name.group)];
@@ -765,12 +771,13 @@ xHiPP_from_cluster = function(json, projection.algorithm = "force", spread = TRU
 xHiPP = function(data, operation, cluster.algorithm = "kmeans", projection.algorithm = "force", qt_cluster = 0, 
                 spread = TRUE, max.iteration = 20, threshold = 0.1, frac = 4.0, return.tree = TRUE, name.group = c("name", "group"),
                 process.type = process.types$ordinary, 
-                summary.path = "")
+                summary.path = "", seed = 42)
 {
   tree = NULL;
 
   QT.CORES <<- detectCores() - 1
   PROCESSING.TYPE <<- process.type
+  SEED <<- seed
   registerDoParallel(cores = QT.CORES)
   cl = makeCluster(QT.CORES, "PSOCK", outfile = "log_file.txt")
   clusterEvalQ(cl, library("mp"))

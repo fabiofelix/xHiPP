@@ -1,6 +1,8 @@
 #================================================================================#
 #Shiny server to test xHiPP algorithm
 #
+#Changed: 03/27/2020
+#         Change: passing seed value to xHiPP function
 #Changed: 12/10/2017
 #         Added option to define number of clusters
 #Changed: 11/15/2017
@@ -63,8 +65,8 @@ my.set.seed = function(value)
     seed_value = as.numeric(paste(seed_value[1], seed_value[2], sep = ""));
   }
   
-  if(seed_value > 0)
-    set.seed(seed_value);  
+  # if(seed_value > 0)
+  #   set.seed(seed_value);  
   
   return(seed_value);
 }  
@@ -146,7 +148,8 @@ function(input, output, session)
                       frac = as.numeric(input$frac),
                       max.iteration = as.numeric(input$max_iteration),
                       process.type = process.type,
-                      summary.path = "www/data/aux2");
+                      summary.path = "www/data/other_data",
+                      seed = seed_value);
 
           tree$seed_value = seed_value;
           tree$order      = input$order;
