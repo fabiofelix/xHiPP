@@ -45,7 +45,7 @@ LIST.ENV.FUNC <- c("add.fields","adjust.coordinate","calc.metrics","create.node"
              "project.tree", "split","spread.tree",
              "spreader","table2tree","tree2table", "get.numeric.columns",
              "get.text.words", "PROCESSING.TYPE", "process.types", "save.summary", "norm.stand", "LIST.ENV.FUNC", "LIST.ENV.PKG",
-             "adjust.path");
+             "adjust.path", "SEED");
 LIST.ENV.PKG <- c("mp", "cluster", "doParallel", "umap");
 
 hclust.centroid = function(index.cluster, dataset, clusters) 
