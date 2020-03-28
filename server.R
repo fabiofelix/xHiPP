@@ -101,6 +101,7 @@ function(input, output, session)
   handle = reactive(
   {
     input$POG; #Permite que seja recarregado sem que algo tenha sido modificado na tela
+    input$seed;
     
     s_json    = "[ERROR]: ";
     has_error = FALSE;
