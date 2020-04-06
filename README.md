@@ -97,6 +97,8 @@ Files specified in column **name** of the .csv will be searched inside *www/data
 Audio files will be presented with respective spectrograms whether the audio and the corresponded image stay in the audio directory (e.g. sound.mp3 and sound.png are inside *www/data/audio*). 
 If just one of them (audio or image) is inside the directory, it will be presented to the user.
 
+> obs.: Browsers such as Firefox and Google Chrome can play only audios in PCM at 8 or 16 bits per sample.
+
 ### Data presentation
 
 When a user clicks on data points:
