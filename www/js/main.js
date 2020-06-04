@@ -28,7 +28,7 @@ $(document).ready(
     
     $("#userFile").fileinput("reset");
     
-    //Adicionado por causa de uma modificação no shiny.js this.makeRequest('uploadEnd'... que limpa o valor do input
+    //Adicionado por causa de uma modificacao no shiny.js this.makeRequest('uploadEnd'... que limpa o valor do input
     $("#userFile").change(function(){ FILE_NAME = $("#userFile").val(); });
     
     $("#list_label").tooltip({html: true, title: $("#label-tooltip").html(), placement: "bottom", tip: "label-tooltip" });
@@ -39,27 +39,13 @@ $(document).ready(
       {button: "#cluster_button",    source: ".cluster_values",    target: "#cluster_algorithm",    default_value: "kmeans"},
       {button: "#projection_button", source: ".projection_values", target: "#projection_algorithm", default_value: "force"}        
     ];
+
+    var handle = new HandleOption();
     
     for(var i = 0; i < config.length; i++)
-      config_options(config[i].button, config[i].source, config[i].target, config[i].default_value);
+      handle.config_options(config[i].button, config[i].source, config[i].target, config[i].default_value);
   }
 );
-
-function config_options(button, source, target, default_value)
-{
-  $(target).val(default_value);
-  $(target).trigger("change");
-
-  $(source).on("click", function(event)
-  { 
-    event.preventDefault();
-    
-    $(target).val($(this).attr("value"));
-    $(target).trigger("change");
-    
-    $(button).html($(this).html() + "<span class='caret'></span>");
-  });    
-}
 
 function load_csv(event)
 {
@@ -88,8 +74,8 @@ function process_file(file_type, error_msg, handle)
     
     if(handle == "shiny")
     {
-//    Força que a página envie algo para o Shiny mesmo se os demais parâmetros da tela não tenham sido modificados
-//    Essa 'variável' precisa ser utilizada no servidor de alguma maneira
+//    Forca que a pagina envie algo para o Shiny mesmo se os demais parametros da tela nao tenham sido modificados
+//    Essa 'variavel' precisa ser utilizada no servidor de alguma maneira
       $("#POG").val(Math.random());
       Shiny.onInputChange("POG", $("#POG").val());
       

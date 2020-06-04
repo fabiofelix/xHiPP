@@ -1,7 +1,6 @@
-
-#tooltip {
+#tooltip_view_data {
   position: absolute;
-  width: 200px;
+  min-width: 200px;
   height: auto;
   padding: 10px;
   background-color: white;
@@ -14,18 +13,18 @@
   pointer-events: none;
 }
 
-#tooltip.hidden {
+#tooltip_view_data.hidden {
   display: none;
 }
 
-#tooltip p {
+#tooltip_view_data p {
   margin: 0;
   font-family: sans-serif;
   font-size: 12px;
   line-height: 20px;
 }
 
-#image_tooltip 
+#tooltip_view_image 
 {
   position: absolute;
   width: 100px;
@@ -41,18 +40,18 @@
   pointer-events: none;
 }
 
-#image_tooltip.hidden {
+#tooltip_view_image.hidden {
   display: none;
 }
 
-#image_tooltip p {
+#tooltip_view_image p {
   margin: 0;
   font-family: sans-serif;
   font-size: 12px;
   line-height: 20px;
 }
 
-#image_tooltip img
+#tooltip_view_image img
 {            
   width: 100px;
   height: 100px;
@@ -66,15 +65,15 @@
 
 #audio_spec
 {
-  height: 100%;
-  width: 100%;
+  max-width: 100%;
+  max-height: 100%;
 }
 
 #audio_sound
 {
-  position: relative;  
-  margin-left: 4.3%; 
-  margin-right: 14.3%; 
+   position: relative;  
+/*  margin-left: 4.3%; 
+  margin-right: 14.3%;  */
 /*  margin-left: 2.4%; 
   margin-right: 12.8%; */
 }
@@ -83,7 +82,8 @@
 {
   padding: 15px; 
   padding-bottom: 10px; 
-  width: 350px;  
+  width: 600px;  
+  /* width: 550px;   */
 }
 
 .row-spec
@@ -99,7 +99,7 @@
   transform: translate(-50%, 0) !important;
 }
 
-.eq-slider
+.eq-slider, .eq-selector
 {
   display: inline-block;
   width: 30px;
@@ -110,5 +110,16 @@
 .eq-label
 {
   font-weight: bold;
+}
+
+.eq-value
+{
+  font-weight: oblique;
+}
+
+.my-test
+{
+  width: 50px;
+  padding: 0px;
 }
 

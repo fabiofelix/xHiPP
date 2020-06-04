@@ -149,7 +149,7 @@ function(input, output, session)
                       frac = as.numeric(input$frac),
                       max.iteration = as.numeric(input$max_iteration),
                       process.type = process.type,
-                      summary.path = "www/data/aux2",
+                      summary.path = "www/data/other_data",
                       seed = seed_value);
 
           tree$seed_value = seed_value;

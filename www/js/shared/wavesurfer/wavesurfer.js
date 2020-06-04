@@ -1,5 +1,5 @@
 /*!
- * wavesurfer.js 3.0.0 (2019-07-12)
+ * wavesurfer.js 3.3.1 (2020-01-14)
  * https://github.com/katspaugh/wavesurfer.js
  * @license BSD-3-Clause
  */
@@ -272,6 +272,13 @@ function () {
      */
 
     this.id = (0, _getId.default)(this.constructor.name.toLowerCase() + '_');
+    /**
+     * Canvas 2d context attributes
+     *
+     * @type {object}
+     */
+
+    this.canvasContextAttributes = {};
   }
   /**
    * Store the wave canvas element and create the 2D rendering context
@@ -284,7 +291,7 @@ function () {
     key: "initWave",
     value: function initWave(element) {
       this.wave = element;
-      this.waveCtx = this.wave.getContext('2d');
+      this.waveCtx = this.wave.getContext('2d', this.canvasContextAttributes);
     }
     /**
      * Store the progress wave canvas element and create the 2D rendering
@@ -297,7 +304,7 @@ function () {
     key: "initProgress",
     value: function initProgress(element) {
       this.progress = element;
-      this.progressCtx = this.progress.getContext('2d');
+      this.progressCtx = this.progress.getContext('2d', this.canvasContextAttributes);
     }
     /**
      * Update the dimensions
@@ -367,15 +374,16 @@ function () {
      * @param {number} y Y start position
      * @param {number} width Width of the rectangle
      * @param {number} height Height of the rectangle
+     * @param {number} radius Radius of the rectangle
      */
 
   }, {
     key: "fillRects",
-    value: function fillRects(x, y, width, height) {
-      this.fillRectToContext(this.waveCtx, x, y, width, height);
+    value: function fillRects(x, y, width, height, radius) {
+      this.fillRectToContext(this.waveCtx, x, y, width, height, radius);
 
       if (this.hasProgressCanvas) {
-        this.fillRectToContext(this.progressCtx, x, y, width, height);
+        this.fillRectToContext(this.progressCtx, x, y, width, height, radius);
       }
     }
     /**
@@ -387,16 +395,63 @@ function () {
      * @param {number} y Y start position
      * @param {number} width Width of the rectangle
      * @param {number} height Height of the rectangle
+     * @param {number} radius Radius of the rectangle
      */
 
   }, {
     key: "fillRectToContext",
-    value: function fillRectToContext(ctx, x, y, width, height) {
+    value: function fillRectToContext(ctx, x, y, width, height, radius) {
       if (!ctx) {
         return;
       }
 
-      ctx.fillRect(x, y, width, height);
+      if (radius) {
+        this.drawRoundedRect(ctx, x, y, width, height, radius);
+      } else {
+        ctx.fillRect(x, y, width, height);
+      }
+    }
+    /**
+     * Draw a rounded rectangle on Canvas
+     *
+     * @private
+     * @param {CanvasRenderingContext2D} ctx Canvas context
+     * @param {number} x X-position of the rectangle
+     * @param {number} y Y-position of the rectangle
+     * @param {number} width Width of the rectangle
+     * @param {number} height Height of the rectangle
+     * @param {number} radius Radius of the rectangle
+     *
+     * @return {void}
+     * @example drawRoundedRect(ctx, 50, 50, 5, 10, 3)
+     */
+
+  }, {
+    key: "drawRoundedRect",
+    value: function drawRoundedRect(ctx, x, y, width, height, radius) {
+      if (height === 0) {
+        return;
+      } // peaks are float values from -1 to 1. Use absolute height values in
+      // order to correctly calculate rounded rectangle coordinates
+
+
+      if (height < 0) {
+        height *= -1;
+        y -= height;
+      }
+
+      ctx.beginPath();
+      ctx.moveTo(x + radius, y);
+      ctx.lineTo(x + width - radius, y);
+      ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+      ctx.lineTo(x + width, y + height - radius);
+      ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+      ctx.lineTo(x + radius, y + height);
+      ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+      ctx.lineTo(x, y + radius);
+      ctx.quadraticCurveTo(x, y, x + radius, y);
+      ctx.closePath();
+      ctx.fill();
     }
     /**
      * Render the actual wave and progress lines
@@ -544,7 +599,9 @@ exports.default = void 0;
 
 var util = _interopRequireWildcard(__webpack_require__(/*! ./util */ "./src/util/index.js"));
 
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; return newObj; } }
+function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function _getRequireWildcardCache() { return cache; }; return cache; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } if (obj === null || _typeof(obj) !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
@@ -699,7 +756,7 @@ function (_util$Observer) {
       this.wrapper.addEventListener('click', function (e) {
         var scrollbarHeight = _this2.wrapper.offsetHeight - _this2.wrapper.clientHeight;
 
-        if (scrollbarHeight != 0) {
+        if (scrollbarHeight !== 0) {
           // scrollbar is visible.  Check if click was on it
           var bbox = _this2.wrapper.getBoundingClientRect();
 
@@ -711,6 +768,11 @@ function (_util$Observer) {
 
         if (_this2.params.interact) {
           _this2.fireEvent('click', e, _this2.handleEvent(e));
+        }
+      });
+      this.wrapper.addEventListener('dblclick', function (e) {
+        if (_this2.params.interact) {
+          _this2.fireEvent('dblclick', e, _this2.handleEvent(e));
         }
       });
       this.wrapper.addEventListener('scroll', function (e) {
@@ -785,8 +847,11 @@ function (_util$Observer) {
 
 
       if (!immediate && -half <= offset && offset < half) {
-        // we'll limit the "re-center" rate.
-        var rate = 5;
+        // set rate at which waveform is centered
+        var rate = this.params.autoCenterRate; // make rate depend on width of view and length of waveform
+
+        rate /= half;
+        rate *= maxScroll;
         offset = Math.max(-rate, Math.min(rate, offset));
         target = scrollLeft + offset;
       } // limit target to valid range (0 to maxScroll)
@@ -903,7 +968,7 @@ function (_util$Observer) {
 
         if (this.params.scrollParent && this.params.autoCenter) {
           var newPos = ~~(this.wrapper.scrollWidth * _progress);
-          this.recenterOnPosition(newPos);
+          this.recenterOnPosition(newPos, this.params.autoCenterImmediately);
         }
 
         this.updateProgress(pos);
@@ -1030,7 +1095,9 @@ var util = _interopRequireWildcard(__webpack_require__(/*! ./util */ "./src/util
 
 var _drawer2 = _interopRequireDefault(__webpack_require__(/*! ./drawer.canvasentry */ "./src/drawer.canvasentry.js"));
 
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; return newObj; } }
+function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function _getRequireWildcardCache() { return cache; }; return cache; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } if (obj === null || _typeof(obj) !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1123,6 +1190,14 @@ function (_Drawer) {
 
     _this.EntryClass = _drawer2.default;
     /**
+     * Canvas 2d context attributes.
+     *
+     * @private
+     * @type {object}
+     */
+
+    _this.canvasContextAttributes = params.drawingContextAttributes;
+    /**
      * Overlap added between entries to prevent vertical white stripes
      * between `canvas` elements.
      *
@@ -1130,6 +1205,14 @@ function (_Drawer) {
      */
 
     _this.overlap = 2 * Math.ceil(params.pixelRatio / 2);
+    /**
+     * The radius of the wave bars. Makes bars rounded
+     *
+     * @private
+     * @type {number}
+     */
+
+    _this.barRadius = params.barRadius || 0;
     return _this;
   }
   /**
@@ -1223,6 +1306,7 @@ function (_Drawer) {
     key: "addCanvas",
     value: function addCanvas() {
       var entry = new this.EntryClass();
+      entry.canvasContextAttributes = this.canvasContextAttributes;
       entry.hasProgressCanvas = this.hasProgressCanvas;
       entry.halfPixel = this.halfPixel;
       var leftOffset = this.maxCanvasElementWidth * this.canvases.length; // wave
@@ -1353,8 +1437,12 @@ function (_Drawer) {
         for (i; i < last; i += step) {
           var peak = peaks[Math.floor(i * scale * peakIndexScale)] || 0;
           var h = Math.round(peak / absmax * halfH);
+          /* in case of silences, allow the user to specify that we
+           * always draw *something* (normally a 1px high bar) */
 
-          _this3.fillRect(i + _this3.halfPixel, halfH - h + offsetY, bar + _this3.halfPixel, h * 2);
+          if (h == 0 && _this3.params.barMinHeight) h = _this3.params.barMinHeight;
+
+          _this3.fillRect(i + _this3.halfPixel, halfH - h + offsetY, bar + _this3.halfPixel, h * 2, _this3.barRadius);
         }
       });
     }
@@ -1405,7 +1493,7 @@ function (_Drawer) {
         } // always draw a median line
 
 
-        _this4.fillRect(0, halfH + offsetY - _this4.halfPixel, _this4.width, _this4.halfPixel);
+        _this4.fillRect(0, halfH + offsetY - _this4.halfPixel, _this4.width, _this4.halfPixel, _this4.barRadius);
       });
     }
     /**
@@ -1440,11 +1528,12 @@ function (_Drawer) {
      * @param {number} y Y-position of the rectangle
      * @param {number} width Width of the rectangle
      * @param {number} height Height of the rectangle
+     * @param {number} radius Radius of the rectangle
      */
 
   }, {
     key: "fillRect",
-    value: function fillRect(x, y, width, height) {
+    value: function fillRect(x, y, width, height, radius) {
       var startCanvas = Math.floor(x / this.maxCanvasWidth);
       var endCanvas = Math.min(Math.ceil((x + width) / this.maxCanvasWidth) + 1, this.canvases.length);
       var i = startCanvas;
@@ -1461,7 +1550,7 @@ function (_Drawer) {
 
         if (intersection.x1 < intersection.x2) {
           this.setFillStyles(entry);
-          entry.fillRects(intersection.x1 - leftOffset, intersection.y1, intersection.x2 - intersection.x1, intersection.y2 - intersection.y1);
+          entry.fillRects(intersection.x1 - leftOffset, intersection.y1, intersection.x2 - intersection.x1, intersection.y2 - intersection.y1, radius);
         }
       }
     }
@@ -1596,6 +1685,134 @@ module.exports = exports.default;
 
 /***/ }),
 
+/***/ "./src/mediaelement-webaudio.js":
+/*!**************************************!*\
+  !*** ./src/mediaelement-webaudio.js ***!
+  \**************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _mediaelement = _interopRequireDefault(__webpack_require__(/*! ./mediaelement */ "./src/mediaelement.js"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _get(target, property, receiver) { if (typeof Reflect !== "undefined" && Reflect.get) { _get = Reflect.get; } else { _get = function _get(target, property, receiver) { var base = _superPropBase(target, property); if (!base) return; var desc = Object.getOwnPropertyDescriptor(base, property); if (desc.get) { return desc.get.call(receiver); } return desc.value; }; } return _get(target, property, receiver || target); }
+
+function _superPropBase(object, property) { while (!Object.prototype.hasOwnProperty.call(object, property)) { object = _getPrototypeOf(object); if (object === null) break; } return object; }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+/**
+ * MediaElementWebAudio backend: allows to load audio as HTML5 audio tag and use it with WebAudio API.
+ * Setting the MediaElementWebAudio backend, there is the possibility to load audio of big dimensions, using the WebAudio API features.
+ * The audio to load is an HTML5 audio tag, so you have to use the same methods of MediaElement backend for loading and playback.
+ * In this way, the audio resource is not loaded entirely from server, but in ranges, since you load an HTML5 audio tag.
+ * In this way, filters and other functionalities can be performed like with WebAudio backend, but without decoding
+ * internally audio data, that caused crashing of the browser. You have to give also peaks, so the audio data are not decoded.
+ *
+ * @since 3.2.0
+ */
+var MediaElementWebAudio =
+/*#__PURE__*/
+function (_MediaElement) {
+  _inherits(MediaElementWebAudio, _MediaElement);
+
+  /**
+   * Construct the backend
+   *
+   * @param {WavesurferParams} params Wavesurfer parameters
+   */
+  function MediaElementWebAudio(params) {
+    var _this;
+
+    _classCallCheck(this, MediaElementWebAudio);
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(MediaElementWebAudio).call(this, params));
+    /** @private */
+
+    _this.params = params;
+    /** @private */
+
+    _this.sourceMediaElement = null;
+    return _this;
+  }
+  /**
+   * Initialise the backend, called in `wavesurfer.createBackend()`
+   */
+
+
+  _createClass(MediaElementWebAudio, [{
+    key: "init",
+    value: function init() {
+      this.setPlaybackRate(this.params.audioRate);
+      this.createTimer();
+      this.createVolumeNode();
+      this.createScriptNode();
+      this.createAnalyserNode();
+    }
+    /**
+     * Private method called by both `load` (from url)
+     * and `loadElt` (existing media element) methods.
+     *
+     * @param {HTMLMediaElement} media HTML5 Audio or Video element
+     * @param {number[]|Number.<Array[]>} peaks Array of peak data
+     * @private
+     */
+
+  }, {
+    key: "_load",
+    value: function _load(media, peaks) {
+      _get(_getPrototypeOf(MediaElementWebAudio.prototype), "_load", this).call(this, media, peaks);
+
+      this.createMediaElementSource(media);
+    }
+    /**
+     * Create MediaElementSource node
+     *
+     * @since 3.2.0
+     * @param {HTMLMediaElement} mediaElement HTML5 Audio to load
+     */
+
+  }, {
+    key: "createMediaElementSource",
+    value: function createMediaElementSource(mediaElement) {
+      this.sourceMediaElement = this.ac.createMediaElementSource(mediaElement);
+      this.sourceMediaElement.connect(this.analyser);
+    }
+  }]);
+
+  return MediaElementWebAudio;
+}(_mediaelement.default);
+
+exports.default = MediaElementWebAudio;
+module.exports = exports.default;
+
+/***/ }),
+
 /***/ "./src/mediaelement.js":
 /*!*****************************!*\
   !*** ./src/mediaelement.js ***!
@@ -1615,7 +1832,9 @@ var _webaudio = _interopRequireDefault(__webpack_require__(/*! ./webaudio */ "./
 
 var util = _interopRequireWildcard(__webpack_require__(/*! ./util */ "./src/util/index.js"));
 
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; return newObj; } }
+function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function _getRequireWildcardCache() { return cache; }; return cache; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } if (obj === null || _typeof(obj) !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1662,9 +1881,12 @@ function (_WebAudio) {
     _this = _possibleConstructorReturn(this, _getPrototypeOf(MediaElement).call(this, params));
     /** @private */
 
-    _this.params = params; // Dummy media to catch errors
-
-    /** @private */
+    _this.params = params;
+    /**
+     * Initially a dummy media element to catch errors. Once `_load` is
+     * called, this will contain the actual `HTMLMediaElement`.
+     * @private
+     */
 
     _this.media = {
       currentTime: 0,
@@ -1699,6 +1921,9 @@ function (_WebAudio) {
     /** @private */
 
     _this.onPlayEnd = null;
+    /** @private */
+
+    _this.mediaListeners = {};
     return _this;
   }
   /**
@@ -1713,22 +1938,74 @@ function (_WebAudio) {
       this.createTimer();
     }
     /**
+     * Attach event listeners to media element.
+     */
+
+  }, {
+    key: "_setupMediaListeners",
+    value: function _setupMediaListeners() {
+      var _this2 = this;
+
+      this.mediaListeners.error = function () {
+        _this2.fireEvent('error', 'Error loading media element');
+      };
+
+      this.mediaListeners.canplay = function () {
+        _this2.fireEvent('canplay');
+      };
+
+      this.mediaListeners.ended = function () {
+        _this2.fireEvent('finish');
+      }; // listen to and relay play, pause and seeked events to enable
+      // playback control from the external media element
+
+
+      this.mediaListeners.play = function () {
+        _this2.fireEvent('play');
+      };
+
+      this.mediaListeners.pause = function () {
+        _this2.fireEvent('pause');
+      };
+
+      this.mediaListeners.seeked = function (event) {
+        _this2.fireEvent('seek');
+      };
+
+      this.mediaListeners.volumechange = function (event) {
+        _this2.isMuted = _this2.media.muted;
+
+        if (_this2.isMuted) {
+          _this2.volume = 0;
+        } else {
+          _this2.volume = _this2.media.volume;
+        }
+
+        _this2.fireEvent('volume');
+      }; // reset event listeners
+
+
+      Object.keys(this.mediaListeners).forEach(function (id) {
+        _this2.media.removeEventListener(id, _this2.mediaListeners[id]);
+
+        _this2.media.addEventListener(id, _this2.mediaListeners[id]);
+      });
+    }
+    /**
      * Create a timer to provide a more precise `audioprocess` event.
-     *
-     * @private
      */
 
   }, {
     key: "createTimer",
     value: function createTimer() {
-      var _this2 = this;
+      var _this3 = this;
 
       var onAudioProcess = function onAudioProcess() {
-        if (_this2.isPaused()) {
+        if (_this3.isPaused()) {
           return;
         }
 
-        _this2.fireEvent('audioprocess', _this2.getCurrentTime()); // Call again in the next frame
+        _this3.fireEvent('audioprocess', _this3.getCurrentTime()); // Call again in the next frame
 
 
         util.frame(onAudioProcess)();
@@ -1738,7 +2015,7 @@ function (_WebAudio) {
       // case of lower framerates
 
       this.on('pause', function () {
-        _this2.fireEvent('audioprocess', _this2.getCurrentTime());
+        _this3.fireEvent('audioprocess', _this3.getCurrentTime());
       });
     }
     /**
@@ -1749,6 +2026,8 @@ function (_WebAudio) {
      * @param {HTMLElement} container HTML element
      * @param {number[]|Number.<Array[]>} peaks Array of peak data
      * @param {string} preload HTML 5 preload attribute value
+     * @throws Will throw an error if the `url` argument is not a valid media
+     * element.
      */
 
   }, {
@@ -1786,21 +2065,26 @@ function (_WebAudio) {
       this._load(elt, peaks);
     }
     /**
-     * Private method called by both `load` (from url)
+     * Method called by both `load` (from url)
      * and `loadElt` (existing media element) methods.
      *
      * @param {HTMLMediaElement} media HTML5 Audio or Video element
      * @param {number[]|Number.<Array[]>} peaks Array of peak data
+     * @throws Will throw an error if the `media` argument is not a valid media
+     * element.
      * @private
      */
 
   }, {
     key: "_load",
     value: function _load(media, peaks) {
-      var _this3 = this;
-
-      // load must be called manually on iOS, otherwise peaks won't draw
+      // verify media element is valid
+      if (!(media instanceof HTMLMediaElement) || typeof media.addEventListener === 'undefined') {
+        throw new Error('media parameter is not a valid media element');
+      } // load must be called manually on iOS, otherwise peaks won't draw
       // until a user interaction triggers load --> 'ready' event
+
+
       if (typeof media.load == 'function') {
         // Resets the media element and restarts the media resource. Any
         // pending events are discarded. How much media data is fetched is
@@ -1808,38 +2092,10 @@ function (_WebAudio) {
         media.load();
       }
 
-      media.addEventListener('error', function () {
-        _this3.fireEvent('error', 'Error loading media element');
-      });
-      media.addEventListener('canplay', function () {
-        _this3.fireEvent('canplay');
-      });
-      media.addEventListener('ended', function () {
-        _this3.fireEvent('finish');
-      }); // Listen to and relay play, pause and seeked events to enable
-      // playback control from the external media element
-
-      media.addEventListener('play', function () {
-        _this3.fireEvent('play');
-      });
-      media.addEventListener('pause', function () {
-        _this3.fireEvent('pause');
-      });
-      media.addEventListener('seeked', function (event) {
-        _this3.fireEvent('seek');
-      });
-      media.addEventListener('volumechange', function (event) {
-        _this3.isMuted = media.muted;
-
-        if (_this3.isMuted) {
-          _this3.volume = 0;
-        } else {
-          _this3.volume = media.volume;
-        }
-
-        _this3.fireEvent('volume');
-      });
       this.media = media;
+
+      this._setupMediaListeners();
+
       this.peaks = peaks;
       this.onPlayEnd = null;
       this.buffer = null;
@@ -1981,7 +2237,6 @@ function (_WebAudio) {
     /**
      * Set the play end
      *
-     * @private
      * @param {number} end Where to end
      */
 
@@ -1989,6 +2244,8 @@ function (_WebAudio) {
     key: "setPlayEnd",
     value: function setPlayEnd(end) {
       var _this4 = this;
+
+      this.clearPlayEnd();
 
       this._onPlayEnd = function (time) {
         if (time >= end) {
@@ -2085,8 +2342,17 @@ function (_WebAudio) {
   }, {
     key: "destroy",
     value: function destroy() {
+      var _this5 = this;
+
       this.pause();
       this.unAll();
+      this.destroyed = true; // cleanup media event listeners
+
+      Object.keys(this.mediaListeners).forEach(function (id) {
+        if (_this5.media) {
+          _this5.media.removeEventListener(id, _this5.mediaListeners[id]);
+        }
+      });
 
       if (this.params.removeMediaElementOnDestroy && this.media && this.media.parentNode) {
         this.media.parentNode.removeChild(this.media);
@@ -2405,8 +2671,11 @@ exports.default = extend;
  * @param {Object[]} sources The objects to use for extending
  *
  * @return {Object} Merged object
+ * @deprecated since version 3.3.0
  */
 function extend(dest) {
+  console.warn('util.extend is deprecated; use Object.assign instead');
+
   for (var _len = arguments.length, sources = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
     sources[_key - 1] = arguments[_key];
   }
@@ -3259,9 +3528,13 @@ var _mediaelement = _interopRequireDefault(__webpack_require__(/*! ./mediaelemen
 
 var _peakcache = _interopRequireDefault(__webpack_require__(/*! ./peakcache */ "./src/peakcache.js"));
 
+var _mediaelementWebaudio = _interopRequireDefault(__webpack_require__(/*! ./mediaelement-webaudio */ "./src/mediaelement-webaudio.js"));
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; return newObj; } }
+function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function _getRequireWildcardCache() { return cache; }; return cache; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } if (obj === null || _typeof(obj) !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
@@ -3308,16 +3581,30 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
  * @property {ScriptProcessorNode} audioScriptProcessor=null Use your own previously
  * initialized ScriptProcessorNode or leave blank.
  * @property {boolean} autoCenter=true If a scrollbar is present, center the
- * waveform around the progress
- * @property {string} backend='WebAudio' `'WebAudio'|'MediaElement'` In most cases
- * you don't have to set this manually. MediaElement is a fallback for
- * unsupported browsers.
+ * waveform on current progress
+ * @property {number} autoCenterRate=5 If autoCenter is active, rate at which the
+ * waveform is centered
+ * @property {boolean} autoCenterImmediately=false If autoCenter is active, immediately
+ * center waveform on current progress
+ * @property {string} backend='WebAudio' `'WebAudio'|'MediaElement'|'MediaElementWebAudio'` In most cases
+ * you don't have to set this manually. MediaElement is a fallback for unsupported browsers.
+ * MediaElementWebAudio allows to use WebAudio API also with big audio files, loading audio like with
+ * MediaElement backend (HTML5 audio tag). You have to use the same methods of MediaElement backend for loading and
+ * playback, giving also peaks, so the audio data are not decoded. In this way you can use WebAudio features, like filters,
+ * also with audio with big duration. For example:
+ * ` wavesurfer.load(url | HTMLMediaElement, peaks, preload, duration);
+ *   wavesurfer.play();
+ *   wavesurfer.setFilter(customFilter);
+ * `
  * @property {string} backgroundColor=null Change background color of the
  * waveform container.
  * @property {number} barHeight=1 The height of the wave bars.
+ * @property {number} barRadius=0 The radius of the wave bars. Makes bars rounded
  * @property {number} barGap=null The optional spacing between bars of the wave,
  * if not provided will be calculated in legacy format.
  * @property {number} barWidth=null Draw the waveform using bars.
+ * @property {number} barMinHeight=null If specified, draw at least a bar of this height,
+ * eliminating waveform gaps
  * @property {boolean} closeAudioContext=false Close and nullify all audio
  * contexts when the destroy method is called.
  * @property {!string|HTMLElement} container CSS selector or HTML element where
@@ -3325,6 +3612,8 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
  * @property {string} cursorColor='#333' The fill color of the cursor indicating
  * the playhead position.
  * @property {number} cursorWidth=1 Measured in pixels.
+ * @property {object} drawingContextAttributes={desynchronized: true} Drawing context
+ * attributes.
  * @property {number} duration=null Optional audio length so pre-rendered peaks
  * can be display immediately for example.
  * @property {boolean} fillParent=true Whether to fill the entire container or
@@ -3345,10 +3634,10 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
  * even integer). If the waveform is longer than this value, additional canvases
  * will be used to render the waveform, which is useful for very large waveforms
  * that may be too wide for browsers to draw on a single canvas.
- * @property {boolean} mediaControls=false (Use with backend `MediaElement`)
+ * @property {boolean} mediaControls=false (Use with backend `MediaElement` or `MediaElementWebAudio`)
  * this enables the native controls for the media element
- * @property {string} mediaType='audio' (Use with backend `MediaElement`)
- * `'audio'|'video'`
+ * @property {string} mediaType='audio' (Use with backend `MediaElement` or `MediaElementWebAudio`)
+ * `'audio'|'video'` ('video' only for `MediaElement`)
  * @property {number} minPxPerSec=20 Minimum number of pixels per second of
  * audio.
  * @property {boolean} normalize=false If true, normalize by the maximum peak
@@ -3559,14 +3848,24 @@ function (_util$Observer) {
       audioScriptProcessor: null,
       audioRate: 1,
       autoCenter: true,
+      autoCenterRate: 5,
+      autoCenterImmediately: false,
       backend: 'WebAudio',
       backgroundColor: null,
       barHeight: 1,
+      barRadius: 0,
       barGap: null,
+      barMinHeight: null,
       container: null,
       cursorColor: '#333',
       cursorWidth: 1,
       dragSelection: true,
+      drawingContextAttributes: {
+        // Boolean that hints the user agent to reduce the latency
+        // by desynchronizing the canvas paint cycle from the event
+        // loop
+        desynchronized: true
+      },
       duration: null,
       fillParent: true,
       forceDecode: false,
@@ -3596,10 +3895,11 @@ function (_util$Observer) {
     };
     _this.backends = {
       MediaElement: _mediaelement.default,
-      WebAudio: _webaudio.default
+      WebAudio: _webaudio.default,
+      MediaElementWebAudio: _mediaelementWebaudio.default
     };
     _this.util = util;
-    _this.params = util.extend({}, _this.defaultParams, params);
+    _this.params = Object.assign({}, _this.defaultParams, params);
     /** @private */
 
     _this.container = 'string' == typeof params.container ? document.querySelector(_this.params.container) : _this.params.container;
@@ -3690,6 +3990,15 @@ function (_util$Observer) {
     /**
      * @private The uninitialised Backend class
      */
+    // Back compat
+
+    if (_this.params.backend == 'AudioElement') {
+      _this.params.backend = 'MediaElement';
+    }
+
+    if ((_this.params.backend == 'WebAudio' || _this.params.backend === 'MediaElementWebAudio') && !_webaudio.default.prototype.supportsWebAudio.call(null)) {
+      _this.params.backend = 'MediaElement';
+    }
 
     _this.Backend = _this.backends[_this.params.backend];
     /**
@@ -3956,15 +4265,6 @@ function (_util$Observer) {
 
       if (this.backend) {
         this.backend.destroy();
-      } // Back compat
-
-
-      if (this.params.backend == 'AudioElement') {
-        this.params.backend = 'MediaElement';
-      }
-
-      if (this.params.backend == 'WebAudio' && !this.Backend.prototype.supportsWebAudio.call(null)) {
-        this.params.backend = 'MediaElement';
       }
 
       this.backend = new this.Backend(this.params);
@@ -3985,9 +4285,9 @@ function (_util$Observer) {
         _this6.drawer.progress(_this6.backend.getPlayedPercents());
 
         _this6.fireEvent('audioprocess', time);
-      }); // only needed for MediaElement backend
+      }); // only needed for MediaElement and MediaElementWebAudio backend
 
-      if (this.params.backend === 'MediaElement') {
+      if (this.params.backend === 'MediaElement' || this.params.backend === 'MediaElementWebAudio') {
         this.backend.on('seek', function () {
           _this6.drawer.progress(_this6.backend.getPlayedPercents());
         });
@@ -4079,6 +4379,18 @@ function (_util$Observer) {
         return _this7.play(start, end);
       });
       return this.backend.play(start, end);
+    }
+    /**
+     * Set a point in seconds for playback to stop at.
+     *
+     * @param {number} position Position (in seconds) to stop at
+     * @version 3.3.0
+     */
+
+  }, {
+    key: "setPlayEnd",
+    value: function setPlayEnd(position) {
+      this.backend.setPlayEnd(position);
     }
     /**
      * Stops and pauses playback
@@ -4620,8 +4932,8 @@ function (_util$Observer) {
     value: function loadDecodedBuffer(buffer) {
       this.backend.load(buffer);
       this.drawBuffer();
-      this.fireEvent('ready');
       this.isReady = true;
+      this.fireEvent('ready');
     }
     /**
      * Loads audio data from a Blob or File object
@@ -4656,13 +4968,14 @@ function (_util$Observer) {
      * audio element with the audio
      * @param {number[]|Number.<Array[]>} peaks Wavesurfer does not have to decode
      * the audio to render the waveform if this is specified
-     * @param {?string} preload (Use with backend `MediaElement`)
+     * @param {?string} preload (Use with backend `MediaElement` and `MediaElementWebAudio`)
      * `'none'|'metadata'|'auto'` Preload attribute for the media element
      * @param {?number} duration The duration of the audio. This is used to
      * render the peaks data in the correct size for the audio duration (as
      * befits the current `minPxPerSec` and zoom value) without having to decode
      * the audio.
      * @returns {void}
+     * @throws Will throw an error if the `url` argument is empty.
      * @example
      * // uses fetch or media element to load file (depending on backend)
      * wavesurfer.load('http://example.com/demo.wav');
@@ -4679,6 +4992,10 @@ function (_util$Observer) {
   }, {
     key: "load",
     value: function load(url, peaks, preload, duration) {
+      if (!url) {
+        throw new Error('url parameter cannot be empty');
+      }
+
       this.empty();
 
       if (preload) {
@@ -4687,7 +5004,7 @@ function (_util$Observer) {
         var preloadIgnoreReasons = {
           "Preload is not 'auto', 'none' or 'metadata'": ['auto', 'metadata', 'none'].indexOf(preload) === -1,
           'Peaks are not provided': !peaks,
-          'Backend is not of type MediaElement': this.params.backend !== 'MediaElement',
+          "Backend is not of type 'MediaElement' or 'MediaElementWebAudio'": ['MediaElement', 'MediaElementWebAudio'].indexOf(this.params.backend) === -1,
           'Url is not of type string': typeof url !== 'string'
         };
         var activeReasons = Object.keys(preloadIgnoreReasons).filter(function (reason) {
@@ -4707,6 +5024,7 @@ function (_util$Observer) {
           return this.loadBuffer(url, peaks, duration);
 
         case 'MediaElement':
+        case 'MediaElementWebAudio':
           return this.loadMediaElement(url, peaks, preload, duration);
       }
     }
@@ -4774,11 +5092,14 @@ function (_util$Observer) {
       }
 
       this.tmpEvents.push(this.backend.once('canplay', function () {
-        _this12.drawBuffer();
+        // ignore when backend was already destroyed
+        if (!_this12.backend.destroyed) {
+          _this12.drawBuffer();
 
-        _this12.fireEvent('ready');
+          _this12.isReady = true;
 
-        _this12.isReady = true;
+          _this12.fireEvent('ready');
+        }
       }), this.backend.once('error', function (err) {
         return _this12.fireEvent('error', err);
       })); // If no pre-decoded peaks provided or pre-decoded peaks are
@@ -4842,7 +5163,7 @@ function (_util$Observer) {
     value: function getArrayBuffer(url, callback) {
       var _this14 = this;
 
-      var options = util.extend({
+      var options = Object.assign({
         url: url,
         responseType: 'arraybuffer'
       }, this.params.xhr);
@@ -4854,7 +5175,7 @@ function (_util$Observer) {
         callback(data);
         _this14.currentRequest = null;
       }), request.on('error', function (e) {
-        _this14.fireEvent('error', 'fetch error: ' + e.message);
+        _this14.fireEvent('error', e);
 
         _this14.currentRequest = null;
       }));
@@ -4886,33 +5207,35 @@ function (_util$Observer) {
     /**
      * Exports PCM data into a JSON array and opens in a new window.
      *
-     * @param {number} length=1024 The scale in which to export the peaks. (Integer)
-     * @param {number} accuracy=10000 (Integer)
+     * @param {number} length=1024 The scale in which to export the peaks
+     * @param {number} accuracy=10000
      * @param {?boolean} noWindow Set to true to disable opening a new
      * window with the JSON
      * @param {number} start Start index
-     * @todo Update exportPCM to work with new getPeaks signature
-     * @return {string} JSON of peaks
+     * @param {number} end End index
+     * @return {Promise} Promise that resolves with array of peaks
      */
 
   }, {
     key: "exportPCM",
-    value: function exportPCM(length, accuracy, noWindow, start) {
+    value: function exportPCM(length, accuracy, noWindow, start, end) {
       length = length || 1024;
       start = start || 0;
       accuracy = accuracy || 10000;
       noWindow = noWindow || false;
-      var peaks = this.backend.getPeaks(length, start);
+      var peaks = this.backend.getPeaks(length, start, end);
       var arr = [].map.call(peaks, function (val) {
         return Math.round(val * accuracy) / accuracy;
       });
-      var json = JSON.stringify(arr);
+      return new Promise(function (resolve, reject) {
+        var json = JSON.stringify(arr);
 
-      if (!noWindow) {
-        window.open('data:application/json;charset=utf-8,' + encodeURIComponent(json));
-      }
+        if (!noWindow) {
+          window.open('data:application/json;charset=utf-8,' + encodeURIComponent(json));
+        }
 
-      return json;
+        resolve(json);
+      });
     }
     /**
      * Save waveform image as data URI.
@@ -4987,7 +5310,8 @@ function (_util$Observer) {
 
       this.isReady = false;
       this.cancelAjax();
-      this.clearTmpEvents();
+      this.clearTmpEvents(); // empty drawer
+
       this.drawer.progress(0);
       this.drawer.setWidth(0);
       this.drawer.drawPeaks({
@@ -5014,8 +5338,14 @@ function (_util$Observer) {
         window.removeEventListener('orientationchange', this._onResize, true);
       }
 
-      this.backend.destroy();
-      this.drawer.destroy();
+      if (this.backend) {
+        this.backend.destroy();
+      }
+
+      if (this.drawer) {
+        this.drawer.destroy();
+      }
+
       this.isDestroyed = true;
       this.isReady = false;
       this.arraybuffer = null;
@@ -5026,7 +5356,7 @@ function (_util$Observer) {
 }(util.Observer);
 
 exports.default = WaveSurfer;
-WaveSurfer.VERSION = "3.0.0";
+WaveSurfer.VERSION = "3.3.1";
 WaveSurfer.util = util;
 module.exports = exports.default;
 
@@ -5049,7 +5379,9 @@ exports.default = void 0;
 
 var util = _interopRequireWildcard(__webpack_require__(/*! ./util */ "./src/util/index.js"));
 
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; return newObj; } }
+function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function _getRequireWildcardCache() { return cache; }; return cache; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } if (obj === null || _typeof(obj) !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
@@ -5089,9 +5421,9 @@ function (_util$Observer) {
   _createClass(WebAudio, [{
     key: "supportsWebAudio",
 
-    /** @private */
+    /** scriptBufferSize: size of the processing buffer */
 
-    /** @private */
+    /** audioContext: allows to process audio with WebAudio API */
 
     /** @private */
 
@@ -5192,7 +5524,7 @@ function (_util$Observer) {
       }
     }), _this$stateBehaviors);
     _this.params = params;
-    /** @private */
+    /** ac: Audio Context instance */
 
     _this.ac = params.audioContext || (_this.supportsWebAudio() ? _this.getAudioContext() : {});
     /**@private */
@@ -5201,7 +5533,7 @@ function (_util$Observer) {
     /** @private */
 
     _this.startPosition = 0;
-    /** @private  */
+    /** @private */
 
     _this.scheduledPause = null;
     /** @private */
@@ -5209,14 +5541,11 @@ function (_util$Observer) {
     _this.states = (_this$states = {}, _defineProperty(_this$states, PLAYING, Object.create(_this.stateBehaviors[PLAYING])), _defineProperty(_this$states, PAUSED, Object.create(_this.stateBehaviors[PAUSED])), _defineProperty(_this$states, FINISHED, Object.create(_this.stateBehaviors[FINISHED])), _this$states);
     /** @private */
 
-    _this.analyser = null;
-    /** @private */
-
     _this.buffer = null;
     /** @private */
 
     _this.filters = [];
-    /** @private */
+    /** gainNode: allows to control audio volume */
 
     _this.gainNode = null;
     /** @private */
@@ -5231,10 +5560,10 @@ function (_util$Observer) {
     /** @private */
 
     _this.playbackRate = 1;
-    /** @private */
+    /** analyser: provides audio analysis information */
 
     _this.analyser = null;
-    /** @private */
+    /** scriptNode: allows processing audio */
 
     _this.scriptNode = null;
     /** @private */
@@ -5249,6 +5578,11 @@ function (_util$Observer) {
     /** @private */
 
     _this.explicitDuration = params.duration;
+    /**
+     * Boolean indicating if the backend was destroyed.
+     */
+
+    _this.destroyed = false;
     return _this;
   }
   /**
@@ -5335,7 +5669,7 @@ function (_util$Observer) {
         }, this.analyser).connect(this.gainNode);
       }
     }
-    /** @private */
+    /** Create ScriptProcessorNode to process audio */
 
   }, {
     key: "createScriptNode",
@@ -5380,7 +5714,7 @@ function (_util$Observer) {
     value: function removeOnAudioProcess() {
       this.scriptNode.onaudioprocess = function () {};
     }
-    /** @private */
+    /** Create analyser node to perform audio analysis */
 
   }, {
     key: "createAnalyserNode",
@@ -5391,7 +5725,6 @@ function (_util$Observer) {
     /**
      * Create the gain node needed to control the playback volume.
      *
-     * @private
      */
 
   }, {
@@ -5647,6 +5980,7 @@ function (_util$Observer) {
 
       this.unAll();
       this.buffer = null;
+      this.destroyed = true;
       this.disconnectFilters();
       this.disconnectSource();
       this.gainNode.disconnect();
@@ -5805,7 +6139,7 @@ function (_util$Observer) {
       start = adjustedTime.start;
       end = adjustedTime.end;
       this.scheduledPause = end;
-      this.source.start(0, start, end - start);
+      this.source.start(0, start);
 
       if (this.ac.state == 'suspended') {
         this.ac.resume && this.ac.resume();
@@ -5868,6 +6202,18 @@ function (_util$Observer) {
         this.playbackRate = value;
         this.play();
       }
+    }
+    /**
+     * Set a point in seconds for playback to stop at.
+     *
+     * @param {number} end Position to end at
+     * @version 3.3.0
+     */
+
+  }, {
+    key: "setPlayEnd",
+    value: function setPlayEnd(end) {
+      this.scheduledPause = end;
     }
   }]);
 

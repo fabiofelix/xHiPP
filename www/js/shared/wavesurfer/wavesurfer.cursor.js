@@ -1,5 +1,5 @@
 /*!
- * wavesurfer.js cursor plugin 3.0.0 (2019-07-12)
+ * wavesurfer.js cursor plugin 3.3.1 (2020-01-14)
  * https://github.com/katspaugh/wavesurfer.js
  * @license BSD-3-Clause
  */
@@ -231,12 +231,14 @@ function () {
       var y = 0;
       var x = e.clientX - bbox.left;
 
+      var flip = bbox.right < e.clientX + _this.outerWidth(_this.displayTime);
+
       if (_this.params.showTime && _this.params.followCursorY) {
         // follow y-position of the mouse
         y = e.clientY - (bbox.top + bbox.height / 2);
       }
 
-      _this.updateCursorPosition(x, y);
+      _this.updateCursorPosition(x, y, flip);
     };
 
     this._onMouseenter = function () {
@@ -275,7 +277,7 @@ function () {
     this.displayTime = null;
     /** @private */
 
-    this.params = ws.util.extend({}, this.defaultParams, params);
+    this.params = Object.assign({}, this.defaultParams, params);
   }
   /**
    * Initialise the plugin (used by the Plugin API)
@@ -286,7 +288,7 @@ function () {
     key: "init",
     value: function init() {
       this.wrapper = this.wavesurfer.container;
-      this.cursor = this.wrapper.appendChild(this.style(document.createElement('cursor'), this.wavesurfer.util.extend({
+      this.cursor = this.wrapper.appendChild(this.style(document.createElement('cursor'), Object.assign({
         position: 'absolute',
         zIndex: this.params.zIndex,
         left: 0,
@@ -302,7 +304,7 @@ function () {
       }, this.params.customStyle)));
 
       if (this.params.showTime) {
-        this.showTime = this.wrapper.appendChild(this.style(document.createElement('showTitle'), this.wavesurfer.util.extend({
+        this.showTime = this.wrapper.appendChild(this.style(document.createElement('showTitle'), Object.assign({
           position: 'absolute',
           zIndex: this.params.zIndex,
           left: 0,
@@ -314,11 +316,15 @@ function () {
           pointerEvents: 'none',
           height: '100%'
         }, this.params.customStyle)));
-        this.displayTime = this.showTime.appendChild(this.style(document.createElement('div'), this.wavesurfer.util.extend({
+        this.displayTime = this.showTime.appendChild(this.style(document.createElement('div'), Object.assign({
           display: 'inline',
           pointerEvents: 'none',
-          margin: 'auto'
-        }, this.params.customShowTimeStyle)));
+          margin: 'auto',
+          visibility: 'hidden' // initial value will be hidden just for measuring purpose
+
+        }, this.params.customShowTimeStyle))); // initial value to measure display width
+
+        this.displayTime.innerHTML = this.formatTime(0);
       }
 
       this.wrapper.addEventListener('mousemove', this._onMousemove);
@@ -354,11 +360,13 @@ function () {
      *
      * @param {number} xpos The x offset of the cursor in pixels
      * @param {number} ypos The y offset of the cursor in pixels
+     * @param {boolean} flip Flag to flip duration text from right to left
      */
 
   }, {
     key: "updateCursorPosition",
     value: function updateCursorPosition(xpos, ypos) {
+      var flip = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
       this.style(this.cursor, {
         left: "".concat(xpos, "px")
       });
@@ -370,9 +378,18 @@ function () {
         var scrollTime = duration / this.wavesurfer.drawer.width * scrollWidth;
         var timeValue = Math.max(0, xpos / elementWidth * duration) + scrollTime;
         var formatValue = this.formatTime(timeValue);
+
+        if (flip) {
+          var textOffset = this.outerWidth(this.displayTime);
+          xpos -= textOffset;
+        }
+
         this.style(this.showTime, {
           left: "".concat(xpos, "px"),
           top: "".concat(ypos, "px")
+        });
+        this.style(this.displayTime, {
+          visibility: 'visible'
         });
         this.displayTime.innerHTML = "".concat(formatValue);
       }
@@ -433,6 +450,22 @@ function () {
         ('000' + Math.floor(time % 1 * 1000)).slice(-3) // milliseconds
         ].join(':');
       });
+    }
+    /**
+     * Get outer width of given element.
+     *
+     * @param {DOM} element DOM Element
+     * @returns {number} outer width
+     */
+
+  }, {
+    key: "outerWidth",
+    value: function outerWidth(element) {
+      if (!element) return 0;
+      var width = element.offsetWidth;
+      var style = getComputedStyle(element);
+      width += parseInt(style.marginLeft + style.marginRight);
+      return width;
     }
   }]);
 

@@ -60,7 +60,8 @@ var Tree_Map = function(vd, s)
         })
         .on("mouseover", function(d)
         {
-          _this.view_data.show_image_tooltip(d.data.isLeave && _this.view_data.isMediaData(d.data.name), {name: d.data.name});
+          _this.view_data.show_image_tooltip(d.data.isLeave && _this.view_data.isMediaData(d.data.name), 
+          {name: d.data.name}, false, {X: d3.event.pageX, Y: d3.event.pageY});
         })
         .on("mouseleave", function(d)
         {

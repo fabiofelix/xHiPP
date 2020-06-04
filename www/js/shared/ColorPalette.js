@@ -2,6 +2,10 @@
 //  http://linkbroker.hu/stuff/kolorwheel.js/
 //  https://bgrins.github.io/spectrum/#methods-show
 //
+//Changed: 06/04/2020
+//         Fixed, load funciton was changing data parameter
+//Changed: 02/20/2020
+//         Added inheritance class structure
 //Changed: 12/27/2017
 //         It wasn't removing Inverse button when changing from Custom mode 
 //Changed: 11/15/2017
@@ -18,9 +22,160 @@
 //         removed reverse from seq_color
 //Created: 11/02/2017
 
+var HandleOption = function()
+{
+  var _this = this; //sempre adicionar
+  this.selected_option = ""; 
+
+  //Adicionadas no prototype
+  // this.create_options = function(wrapper, title = "", default_option = "default", label_top = false) {}
+  // this.select_default = function(value) {}
+
+  //Utilizado para opcoes estaticas no htmtl
+  this.config_options = function(button, source, target, default_value)
+  {
+    $(target).val(default_value);
+    $(target).trigger("change");
+
+    $(source).on("click", function(event)
+    { 
+      event.preventDefault();
+      
+      $(target).val($(this).attr("value"));
+      $(target).trigger("change");
+      
+      $(button).html($(this).html() + "<span class='caret'></span>");
+    });
+
+    $(source).each(function()
+    {
+      if($(this).attr("value") == default_value)
+      {
+        $(this).trigger("click");
+        return false;
+      }  
+    });
+  };
+  this.clear = function(wrapper)
+  {
+    $(wrapper).html("");
+  };
+  this.compose = function(wrapper, title, default_option, label_top)
+  {
+    var ul_link = _this.generate_options(wrapper, default_option);
+    var lb_bt = _this.generate_button(title);
+    var div   = $("<div>").addClass("dropdown");
+    
+    if(label_top)
+      $(wrapper).append(lb_bt[0]);
+    else
+      div.append(lb_bt[0]);
+    
+    div.append(lb_bt[1]).append(ul_link[0]);
+    $(wrapper).append(div);
+
+    return ul_link[1];
+  };
+  this.bind = function(selected_link)
+  {
+    $(document).off("click", '.' + _this.get_class());
+    $(document).on("click", '.' + _this.get_class(), _this.onClick_option);    
+    
+    if(selected_link)
+      selected_link.trigger("click");
+  };
+  this.generate_options = function(wrapper, default_option)
+  {
+    var ul  = $("<ul>").addClass("dropdown-menu");
+    var selected_link = null;
+    var options = _this.get_options();
+
+    for(var i = 0; i < options.length; i++)
+    {
+      var link = $("<a>");
+      ul.append($("<li>").append(
+        link.addClass(_this.get_class())
+                       .attr("value", options[i].value)
+                       .attr("wrapper", wrapper)
+                       .html(options[i].text))
+      );
+      
+      if(options[i].value === default_option)
+        selected_link = link;
+    }  
+    
+    return [ul, selected_link];
+  };
+  this.generate_button = function(title)
+  {
+    var label  = $("<label>").text(title + (title == "" ? "" : ": ")).css("padding-right", 5);
+
+    var options = _this.get_options();
+    var default_option = "";
+
+    for(var i = 0; i < options.length; i++)
+    {
+      if(options[i].value == _this.selected_option)
+        default_option = options[i].text;
+    }  
+
+    var button = $("<button>").html(default_option + "span class='caret'></span>")
+                              .addClass("btn btn-default dropdown-toggle")
+                              .attr("id", _this.get_id())
+                              .attr("type", "button")
+                              .attr("data-toggle", "dropdown");  
+                              
+    return [label, button];
+  };
+  this.onClick_option = function(event)
+  {
+    event.preventDefault();
+
+    var wrapper = $($(this).attr("wrapper"));
+    var parent  = wrapper.find(".dropdown");
+
+    wrapper.find('#' + _this.get_id()).html($(this).html() + "<span class='caret'></span>");
+    _this.selected_option = $(this).attr("value");
+
+    _this.do_option_click(event, parent);
+  };
+  //Reimplementar nos filhos
+  this.get_options = function()
+  {
+    return [];
+  };  
+  this.get_class = function()
+  {
+    return "";
+  };
+  this.get_id = function()
+  {
+    return "";
+  };  
+  this.do_option_click = function(event, parent) 
+  {
+
+  };
+}
+
+HandleOption.prototype.create_options = function(wrapper, title = "", default_option = "default", label_top = false)
+{
+  this.clear(wrapper);
+  this.select_default(default_option);
+  var sl = this.compose(wrapper, title, default_option, label_top);
+  this.bind(sl);
+};
+
+HandleOption.prototype.select_default = function(value)
+{
+  this.selected_option = value
+};
+
 var ColorPalette = function()
 {
+  HandleOption.call(this);
   var _this = this;
+
   //From Nutrient Explorer http://bl.ocks.org/syntagmatic/raw/3150059/
   this.default_palette = ["#95326CFF","#BFBFBFFF","#94DAE1FF","#C29B93FF","#9367BCFF","#E2DD92FF","#FF7C0AFF","#E6B751FF",
                           "#F1F146FF","#FFBA75FF","#E274C1FF","#C4AFD4FF","#BA6940FF","#F7B6D2FF","#17BFCFFF","#8B564BFF",
@@ -28,24 +183,30 @@ var ColorPalette = function()
                           "#2D9F2DFF"];
   this.default_color = 0;                          
   this.colors = {};
-  this.selected_palette = "default";
   this.selected_start   = "#FF0000";
   this.selected_finish  = "#00FF00";
-  
-  //Add selection list of palettes into a 'wrapper'
+  this.default_start = "";
+  this.default_finish = "";
+
   this.create_options = function(wrapper, title = "Colors", default_option = "default", default_start = "#FF0000", default_finish = "#00FF00", label_top = false)
   {
-    $(wrapper).html("");
-    _this.selected_palette = default_option;
-    
-    if(_this.selected_palette === "custom")
+    _this.default_start = default_start;
+    _this.default_finish = default_finish;
+    HandleOption.prototype.create_options.call(this, wrapper, title, default_option, label_top)
+  };
+  this.select_default = function(value)
+  {
+    HandleOption.prototype.select_default.call(this, value);
+
+    if(_this.selected_option === "custom")
     {
-      _this.selected_start  = default_start === "" ? _this.selected_start : default_start;
-      _this.selected_finish = default_finish  === "" ? _this.selected_finish : default_finish;
+      _this.selected_start  = _this.default_start === "" ? _this.selected_start : _this.default_start;
+      _this.selected_finish = _this.default_finish  === "" ? _this.selected_finish : _this.default_finish;
     }    
-    
-    var ul  = $("<ul>").addClass("dropdown-menu");
-    var options = [
+  };
+  this.get_options = function()
+  {
+    return [
       {value: "default", text: "Default"},
       {value: "gray", text: "Gray"},
       {value: "igray", text: "Inverse Gray"},
@@ -57,90 +218,18 @@ var ColorPalette = function()
       {value: "iterrain", text: "Inverse Terrain"},
       {value: "custom", text: "Custom"}            
     ];
-    
-    var selected_link = null;
-    
-    for(var i = 0; i < options.length; i++)
-    {
-      var link = $("<a>");
-      ul.append($("<li>").append(
-        link.addClass("palette_option")
-                       .attr("value", options[i].value)
-                       .attr("wrapper", wrapper)
-                       .html(options[i].text))
-      );
-      
-      if(options[i].value === default_option)
-        selected_link = link;
-    }
-    
-    var label  = $("<label>").text(title + (title == "" ? "" : ": ")).css("padding-right", 5);
-    var button = $("<button>").html("Default<span class='caret'></span>")
-                              .addClass("btn btn-default dropdown-toggle")
-                              .attr("id", "palette_button")
-                              .attr("type", "button")
-                              .attr("data-toggle", "dropdown");    
-    var div = $("<div>").addClass("dropdown");
-    
-    if(label_top)
-      $(wrapper).append(label);
-    else
-      div.append(label);
-    
-    div.append(button).append(ul);                                  
-    $(wrapper).append(div);
-    
-//     $(wrapper).append(
-//       $("<div>").addClass("dropdown")
-//                 .append(label)
-//                 .append(button)
-//                 .append(ul)
-//     );
-    
-    $(document).off("click", ".palette_option");
-    $(document).on("click", ".palette_option", _this.onClick_option);    
-    
-    if(selected_link)
-      selected_link.trigger("click");
+  }; 
+  this.get_class = function()
+  {
+    return "palette_option";
   };
-  
-  //Load 'color_qt' or 'data.lenth' palette values and associate with each data value
-  this.load = function(data, color_qt = 0)
+  this.get_id = function()
   {
-    var palette = _this.get_palette(color_qt > 0 ? color_qt : data.length);
-    data.sort();
-    
-    for(var i = 0; i < data.length; i++)
-      _this.colors[data[i]] = palette[i];      
-  };  
-  
-  //Get the correct color value associated with 'id' and changed by 'alpha'
-  this.get_color = function(id, alpha = undefined)
+    return "palette_button";
+  };   
+  this.do_option_click = function(event, parent)
   {
-    var color = _this.colors[id];
-    
-    if(typeof(color) === "undefined")
-      return _this.get_default().slice(0, 7) + _this.alpha2hex(  alpha === undefined ? 1 : alpha  );
-    else if(alpha !== undefined)
-      return color.slice(0, 7) + _this.alpha2hex(alpha);
-    else  
-      return color;
-  };
-  
-  this.get_default = function()
-  {
-    return _this.default_palette[_this.default_color];
-  };  
-  this.onClick_option = function(event)
-  {
-    var wrapper = $($(this).attr("wrapper"));
-    var parent  = wrapper.find(".dropdown");
-    var last_colors = _this.get_limit_colors();
-    
-    wrapper.find("#palette_button").html($(this).html() + "<span class='caret'></span>");
-    _this.selected_palette = $(this).attr("value");
-    
-    if (_this.selected_palette === "custom")
+    if (_this.selected_option === "custom")
     {
       if($("#custom_start").length == 0)
       {
@@ -196,12 +285,36 @@ var ColorPalette = function()
     $("#custom_start").spectrum("set", finish);
     $("#custom_finish").spectrum("set", start);
   };
-
+  //Load 'color_qt' or 'data.lenth' palette values and associate with each data value
+  this.load = function(data, color_qt = 0)
+  {
+    var new_data = data.slice();
+    var palette = _this.get_palette(color_qt > 0 ? color_qt : new_data.length);
+    new_data.sort();
+    
+    for(var i = 0; i < new_data.length; i++)
+      _this.colors[new_data[i]] = palette[i];
+  };    //Get the correct color value associated with 'id' and changed by 'alpha'
+  this.get_color = function(id, alpha = undefined)
+  {
+    var color = _this.colors[id];
+    
+    if(typeof(color) === "undefined")
+      return _this.get_default().slice(0, 7) + _this.alpha2hex(  alpha === undefined ? 1 : alpha  );
+    else if(alpha !== undefined)
+      return color.slice(0, 7) + _this.alpha2hex(alpha);
+    else  
+      return color;
+  };
+  this.get_default = function()
+  {
+    return _this.default_palette[_this.default_color];
+  };    
   this.get_palette = function(color_qt)
   {
     var colors = _this.get_limit_colors();
     
-    if(_this.selected_palette === "default")
+    if(_this.selected_option === "default")
       return _this.default_palette.slice(0, color_qt);
     else if(colors.start != "" && colors.finish != "" && color_qt > 0)
       return _this.seq_color(colors.start, colors.finish, color_qt);
@@ -210,7 +323,6 @@ var ColorPalette = function()
   };
   this.seq_color = function (from, to, qt)
   {
-    
     var base   = new KolorWheel(from);
     var target = base.abs(to, qt < 2 ? 2 : qt);
     var values = [];
@@ -223,7 +335,7 @@ var ColorPalette = function()
   };  
   this.get_limit_colors = function()
   {
-    switch(_this.selected_palette)
+    switch(_this.selected_option)
     {
       case "gray"   : return {start: "#F2F2F2FF", finish: "#000000FF"}; //(white-gray, black)
       case "igray"  : return {start: "#000000FF", finish: "#F2F2F2FF"}; //(black, white-gray)   
@@ -270,5 +382,7 @@ var ColorPalette = function()
                         Math.round(finish.getHsl()[1]) + "%, " +
                         Math.round(finish.getHsl()[2]) + "%, " +
                         alpha + ")"];
-  }
+  }    
 }
+
+// ColorPalette.prototype = Object.create(HandleOption);

@@ -1,5 +1,7 @@
 //config_svg
 
+//Changed: 01/22/2020
+//         Added function arrayToObject
 //Changed: 10/06/2018
 //         Added functions read_data and download_data
 //Changed: 03/02/2017
@@ -22,7 +24,7 @@ function disable_form(disable, just_button)
   
   $("form button").prop("disabled", disable);  
   
-//Os campos desabilitados não são enviados para o servidor quando o action do form é utilizado.  
+//Os campos desabilitados nï¿½o sï¿½o enviados para o servidor quando o action do form ï¿½ utilizado.  
   if(!just_button)
   {
     $("form input").prop("disabled", disable);
@@ -89,11 +91,11 @@ function config_svg(wrapper, height, margin)
   
   svg = svg.attr("width", $(wrapper).innerWidth() - parseInt($(wrapper).css("padding-left")) - parseInt($(wrapper).css("padding-right")));
   
-  if(height !== undefined)     
-    svg.attr("height", height);  
-  else if(height !== undefined && margin !== undefined)
+  if(height !== undefined && margin !== undefined)
     svg.attr("height", height + margin.top + margin.bottom)
        .append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+  else if(height !== undefined)
+    svg.attr("height", height)
   else
     svg.attr("height", $(wrapper).innerHeight()  - parseInt($(wrapper).css("padding-top")) - parseInt($(wrapper).css("padding-bottom")))
  
@@ -107,7 +109,7 @@ function parse_time(date)
       date   = tokens[0].split('/'),
       time   = tokens[1].split(':');
 
-//ano, mês, dia, hora, minuto, segundo, milissegundo
+//ano, mï¿½s, dia, hora, minuto, segundo, milissegundo
   return new Date(+date[2], +date[0] - 1, +date[1], +time[0], +time[1], +time[2]);  
 }
 
@@ -159,4 +161,14 @@ function read_data(stream, callback)
   };
   
   reader.readAsText(stream);
+}
+
+function arrayToObject(array)
+{
+  var obj = {};
+  
+  for(var i = 0; i < array.length; i++)
+    obj[array[i]] = 0;
+
+  return obj;
 }

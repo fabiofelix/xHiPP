@@ -37,6 +37,7 @@ var PackedTree = function(vd, s)
   this.viewing_state = View_States.normal;
   this.interpolation_view = null;
   this.dimensions = {margin: 0, padding: 0};
+  this.previous_obj = null;
   
   if(vd == undefined)
     throw "ViewData undefined";
@@ -131,7 +132,7 @@ var PackedTree = function(vd, s)
       .append("circle")
         .attr("class", function(d) 
         { 
-//TODO: verificar se é necessário
+//TODO: verificar se ï¿½ necessï¿½rio
           d.svg_item = this;
           return d.parent ? d.children ? "node" : "node node--leaf" : "node node--root"; 
         })
@@ -173,13 +174,28 @@ var PackedTree = function(vd, s)
           if(!_this.view_data.isMediaData(d.data.name))
             force_presentation = !d.data.isLeave && !d.data.isRoot;
           
-          _this.view_data.show_image_tooltip(true, {name: d.data.name, alternative: d.data.summary}, "#image_tooltip", force_presentation);
+          _this.view_data.show_image_tooltip(true, {name: d.data.name, alternative: d.data.summary}, 
+              force_presentation, {X: d3.event.pageX, Y: d3.event.pageY});
         })
         .on("mouseleave", function(d)
         {
+          if(_this.view_data.showing_data)
+            _this.previous_obj = this;
+            else
+            {
 //TODO: criar uma classe css
-          this.style.stroke      = "#646464";
-          this.style.strokeWidth = 0.5;
+            this.style.stroke      = "#646464";
+            this.style.strokeWidth = 0.5;
+
+            if(_this.previous_obj)
+            {
+              _this.previous_obj.style.stroke      = "#646464";
+              _this.previous_obj.style.strokeWidth = 0.5;              
+              _this.previous_obj = null;
+            }
+          }
+
+          _this.view_data.reset_show();
 
           _this.sync.hover_treemap(d, false);
           _this.view_data.show_image_tooltip(false);
@@ -311,7 +327,7 @@ var PackedTree = function(vd, s)
     event.stopPropagation();     
   };
   //Precisa selecionar todos os itens svg porque todos precisam ter seus atributos modificados,
-  //tanto os que estão sendo focados quanto os demais
+  //tanto os que estï¿½o sendo focados quanto os demais
   this.zoomTo = function (iv, svg) 
   {
     _this.interpolation_view = iv;
@@ -334,7 +350,7 @@ var PackedTree = function(vd, s)
     d3.selectAll("circle")
     .style("visibility", function(d)
     {
-      return d.depth >= 2 ? "hidden" : "visible"; //deixa visíveis a raiz (depth = 0) e seus filhos (depth = 1) 
+      return d.depth >= 2 ? "hidden" : "visible"; //deixa visï¿½veis a raiz (depth = 0) e seus filhos (depth = 1) 
     })
     .style("fill", function(d) 
     { 

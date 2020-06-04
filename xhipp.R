@@ -553,7 +553,7 @@ project.tree = function(tree, dataset, projection.algorithm, name.group, paralle
     }
 
     tree = estimate.radius(tree, dataset, name.group);
-    vis  = adjust.coordinate(vis, tree); 
+    # vis  = adjust.coordinate(vis, tree); 
 
     `%myinfix%` <- ifelse(parallel, `%dopar%`, `%do%`)
 
