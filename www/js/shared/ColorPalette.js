@@ -337,14 +337,14 @@ var ColorPalette = function()
   {
     switch(_this.selected_option)
     {
-      case "gray"   : return {start: "#F2F2F2FF", finish: "#000000FF"}; //(white-gray, black)
-      case "igray"  : return {start: "#000000FF", finish: "#F2F2F2FF"}; //(black, white-gray)   
-      case "heat1"  : return {start: "#FFFF00FF", finish: "#FF0000FF"}; //(yellow, red)
-      case "iheat1" : return {start: "#FF0000FF", finish: "#FFFF00FF"}; //(red, yellow) 
-      case "heat2" : return {start: "#FFFF00FF", finish: "#500000FF"};   //(yellow, brown)
-      case "iheat2"  : return {start: "#500000FF", finish: "#FFFF00FF"}; //(brown, yellow)      
-      case "terrain": return {start: "#F2F2F2FF", finish: "#00A600FF"};   //(gray, green)
-      case "iterrain" : return {start: "#00A600FF" , finish: "#F2F2F2FF"}; //(green, gray)      
+      case "gray"   : return {start: "#F2F2F2FF", finish: "#333333FF"}; //(white-gray, black)
+      case "igray"  : return {start: "#333333FF", finish: "#F2F2F2FF"}; //(black, white-gray)   
+      case "heat1"  : return {start: "#E6E31AFF", finish: "#E61919FF"}; //(yellow, red)
+      case "iheat1" : return {start: "#E61919FF", finish: "#E6E31AFF"}; //(red, yellow) 
+      case "heat2" : return {start: "#f8f208ff", finish: "#500000FF"};   //(yellow, brown)
+      case "iheat2"  : return {start: "#500000FF", finish: "#E6E31AFF"}; //(brown, yellow)      
+      case "terrain": return {start: "#F2F2F2FF", finish: "#109610FF"};   //(gray, green)
+      case "iterrain" : return {start: "#109610FF" , finish: "#F2F2F2FF"}; //(green, gray)      
       case "custom"   :  return {start: _this.selected_start, finish: _this.selected_finish};
       default: return {start: "", finish: ""};  
     }
