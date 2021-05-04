@@ -1,6 +1,8 @@
 //This classes needs: bootstrap, fancybox (cf. helpers for thumbs), wavesurfer, wavesurfer.cursor.js, jquery-ui
 //                    Forms form_text.html, form_audio.html, form_others into pages/
 //
+//Changed: 06/22/2020
+//         Changed tests of media (isImage, isText, isAudio) to compare lower case extensions 
 //Changed: 06/04/2020
 //         Changed eq_select range of frequencies
 //Changed: 03/18/2020
@@ -412,18 +414,22 @@ var ViewData = function()
   };  
   this.isMediaData = function(file_name)
   {
+    file_name = file_name.toLowerCase();
     return _this.isImage(file_name) || _this.isText(file_name) || _this.isAudio(file_name);
   };
   this.isImage = function (file_name)
   {
+    file_name = file_name.toLowerCase();
     return file_name.search(".png") != -1 || file_name.search(".jpg") != -1 || file_name.search(".jpeg") != -1;
   };
   this.isText = function (file_name)
   {
+    file_name = file_name.toLowerCase();
     return file_name.search(".txt") != -1; 
   };
   this.isAudio = function (file_name)
   {
+    file_name = file_name.toLowerCase();
     return file_name.search(".mp3") != -1 || file_name.search(".wav") != -1 || file_name.search(".flac") != -1; 
   };  
   this.extractImageAudio = function(audio_name, type = ".png")
@@ -441,7 +447,7 @@ var ViewData = function()
     else if(_this.isText(path))
       return _this.text_path + path;      
     else if(_this.isAudio(path))
-      return _this.audio_path + _this.extractImageAudio(path);
+      return _this.audio_path + _this;
     else
       return "";
   };

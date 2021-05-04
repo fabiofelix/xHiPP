@@ -1,6 +1,8 @@
 #================================================================================#
 #Shiny server to test xHiPP algorithm
 #
+#Changed: 04/01/2021
+#         Change: removing seed from screen
 #Changed: 03/27/2020
 #         Change: passing seed value to xHiPP function
 #Changed: 12/10/2017
@@ -50,27 +52,6 @@ get.file.path = function(name)
   return(paste("www/data/json/", file.name, "_hippTree", stringr::str_pad(count, 3, side = "left", pad = "0"), ".json", sep = ""));
 }  
 
-my.set.seed = function(value)
-{
-  seed_value = as.numeric(value);
-  
-  if(seed_value == -1)
-    seed_value = 0
-  else if(seed_value == 0)
-  {
-    seed_value = timestamp(suffix = "", prefix = "", quiet = TRUE);
-    seed_value = unlist(strsplit(seed_value, " "));
-    seed_value = seed_value[length(seed_value) - 1];
-    seed_value = unlist(strsplit(seed_value, ":"));
-    seed_value = as.numeric(paste(seed_value[1], seed_value[2], sep = ""));
-  }
-  
-  # if(seed_value > 0)
-  #   set.seed(seed_value);  
-  
-  return(seed_value);
-}  
-
 evaluate = function(tree, data, qt_cluster)
 {
   projection = tree2table(tree);
@@ -101,8 +82,7 @@ function(input, output, session)
   handle = reactive(
   {
     input$POG; #Permite que seja recarregado sem que algo tenha sido modificado na tela
-    input$seed;
-    
+
     s_json    = "[ERROR]: ";
     has_error = FALSE;
 
@@ -113,7 +93,6 @@ function(input, output, session)
     {
       s_json = tryCatch(
       {
-          seed_value = my.set.seed(input$seed);
           operation = input$order;
           process.type = process.types$ordinary;
           qt_cluster = ifelse(is.null(input$qt_cluster) || is.na(input$qt_cluster) || input$qt_cluster == "", 
@@ -149,10 +128,8 @@ function(input, output, session)
                       frac = as.numeric(input$frac),
                       max.iteration = as.numeric(input$max_iteration),
                       process.type = process.type,
-                      summary.path = "www/data/other_data",
-                      seed = seed_value);
+                      summary.path = "www/data/other_data");
 
-          tree$seed_value = seed_value;
           tree$order      = input$order;
           tree$cluster_algorithm = input$cluster_algorithm;
           tree$projection_algorithm = input$projection_algorithm;
@@ -166,9 +143,10 @@ function(input, output, session)
             data = tree2table(data, by.data = TRUE)$dataset;
           
           tree = evaluate(tree, data, tree$qt_cluster);
-          
+
           if(process.type == process.types$text && !is.null(input$text_path) && !is.na(input$text_path) && length(list.files(input$text_path, pattern = ".txt")) > 0)
-            tree = extract.tree.topics.new(tree, input$text_path, data = data, topic.as.group = !("group" %in% colnames(data)))
+            # tree = extract.tree.topics.new(tree, input$text_path, data = data, topic.as.group = !("group" %in% colnames(data)))
+            tree = extract.tree.topics.new(tree, input$text_path, data = data, topic.as.group = TRUE)
 
           toJSON(tree, pretty = TRUE, auto_unbox = TRUE);
       },

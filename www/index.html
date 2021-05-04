@@ -99,14 +99,7 @@
             <input class="adjust-input" id="max_iteration" type="number" min="0" max="" step="1" value="20"/>
           </div>        
         </div>   
-       
-        <div class="col-xs-2 adjust-column">               
-          <div class="input-group">
-            <label class="control-label">Seed:</label>
-            <input class="adjust-input" id="seed" type="number" min="-1" max="" step="1" value="0"/>
-          </div>
-        </div>  
-
+        
       </div>  
       <div class="row adjust-row">
 
@@ -141,6 +134,10 @@
         <div class="col-xs-5 adjust-column adjust-button">
           <button id='cluster2csv' type='button' class="btn btn-outline btn-default" >Cluster 2 csv</button>
         </div>              
+
+        <!-- <div class="col-xs-5 adjust-column adjust-button">
+          <button id='savesvg' type='button' class="btn btn-outline btn-default" >Save SVG</button>
+        </div>                       -->
         
         <div class="col-xs-3 adjust-column adjust-button">
           <button id="show_values" type='button' class="btn btn-outline btn-success" data-toggle="tooltip"><i class="fa fa-info-circle"></i></button>
@@ -246,6 +243,7 @@
   <script src="js/shared/d3.layout.cloud.js"></script>
   <script src="js/shared/wavesurfer/wavesurfer.js"></script>
   <script src="js/shared/wavesurfer/wavesurfer.cursor.js"></script>
+  <!-- <script src="js/shared/saveSvgAsPng.js"></script> -->
   <script src="js/shared/functions.js"></script>
   <script src="js/shared/ColorPalette.js"></script>
   <script src="js/shared/viewdata/ViewData.js"></script>  

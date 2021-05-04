@@ -38,6 +38,7 @@ var PackedTree = function(vd, s)
   this.interpolation_view = null;
   this.dimensions = {margin: 0, padding: 0};
   this.previous_obj = null;
+  this.svg = null;
   
   if(vd == undefined)
     throw "ViewData undefined";
@@ -46,6 +47,7 @@ var PackedTree = function(vd, s)
   
   this.load = function(tree, svg)
   {
+    _this.svg = svg;
     _this.view_data.reset_show();
     
     var root = d3.hierarchy(tree)
@@ -173,7 +175,7 @@ var PackedTree = function(vd, s)
                        
           if(!_this.view_data.isMediaData(d.data.name))
             force_presentation = !d.data.isLeave && !d.data.isRoot;
-          
+         
           _this.view_data.show_image_tooltip(true, {name: d.data.name, alternative: d.data.summary}, 
               force_presentation, {X: d3.event.pageX, Y: d3.event.pageY});
         })
@@ -207,8 +209,8 @@ var PackedTree = function(vd, s)
   {
     circle.append("title").text(function(d) 
     { 
-      if(d.data.topics != undefined && d.data.topics !== "")
-        return d.data.isLeave ? d.data.name + " (" + d.data.topics.filter(String) + ")" : d.data.topics.filter(String);
+      if(d.data.terms != undefined && d.data.terms !== "")
+        return d.data.isLeave ? d.data.name + " (" + d.data.terms.filter(String) + ")" : d.data.terms.filter(String);
       else if(d.data.isLeave)
         return d.data.name;
     });   

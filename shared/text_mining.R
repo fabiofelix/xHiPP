@@ -1,6 +1,10 @@
 #================================================================================#
 #Set of generic functions
 #
+#Changed: 05/03/2021
+#         Added stopwords directory
+#         Added docterms inferior/superior frequency limits
+#         Removed warnnings about Vector Source
 #Changed: 05/04/2018
 #         Added tfidf function
 #         Extend list of 'stop words' in preprocess.text funcntion
@@ -34,31 +38,58 @@ preprocess.text = function(source.path, file.type = ".txt", list.file = NULL)
   
   if(length(filenames) > 0)
   {  
-    files     = lapply(filenames, readLines);
-    docs      = Corpus(VectorSource(files));
+    files = lapply(filenames, function(file) { paste(stringi::stri_read_lines(file), collapse = " ") });    
+    docs  = Corpus(DataframeSource(data.frame(doc_id = basename(filenames), text = unlist(files))));
     
     docs = tm_map(docs, content_transformer(tolower));
     docs = tm_map(docs, removePunctuation);
     docs = tm_map(docs, removeNumbers);
-    docs = tm_map(docs, removeWords, stopwords("english"));
-    docs = tm_map(docs, removeWords, c("sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday",
-                                       tolower(month.name),
-                                       "day", "week", "weekend", "month", "year", "second", "minute", "hour",
-                                       "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten",
-                                       "hundred", "million", "billion", 
-                                       "first", "second", "third", "fourth", "fifth", "sixth", "seventh", "eighth", "nineth", "tenth",
-                                       "dont", "didnt", "wont", "woudnt", "coudnt", "cant", "cannot", "wasnt", "werent",
-                                       "new", "old", "tall", "short", "great", 
-                                       "late", "early", "latest", "earlier"));
-    docs = tm_map(docs, removeWords, tolower(month.name));    
+
+    stopword.path = adjust.path(file.path(getwd(), "shared", "stopwords"))
+    stop.words = list.files(stopword.path, pattern = ".spw", full.names = TRUE)
+
+    if(length(stop.words) > 0)
+    {
+      stop.words = lapply(stop.words, readLines)
+      stop.words = unlist(stop.words)
+      stop.words = unique(stop.words)
+      
+      limit = ceiling(length(stop.words) / 100)
+      
+      for(i in 1:limit)
+      {
+        begin = (i - 1) * 100 + 1
+        end   = ifelse(i == limit, length(stop.words), (i * 100))
+        docs = tm_map(docs, removeWords, stop.words[ begin : end ]);
+      }
+    }else
+    {
+      docs = tm_map(docs, removeWords, stopwords("english"));
+      docs = tm_map(docs, removeWords, c("sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday",
+                                         tolower(month.name),
+                                         "day", "week", "weekend", "month", "year", "second", "minute", "hour",
+                                         "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten",
+                                         "hundred", "million", "billion", 
+                                         "first", "second", "third", "fourth", "fifth", "sixth", "seventh", "eighth", "nineth", "tenth",
+                                         "dont", "didnt", "wont", "woudnt", "coudnt", "cant", "cannot", "wasnt", "werent",
+                                         "new", "old", "tall", "short", "great", 
+                                         "late", "early", "latest", "earlier"));
+      docs = tm_map(docs, removeWords, tolower(month.name));    
+    }
+    
     #remove whitespace
     docs = tm_map(docs, stripWhitespace);
     #Stem document
     docs = tm_map(docs, stemDocument);
     
     #Create document-term matrix
-    dtm = DocumentTermMatrix(docs);
+    limit.inf = ceiling(0.01 * length(files)) #remove terms that appear in less than 1% of documents
+    limit.sup = ceiling(0.5 * length(files))  #remove terms that appear in more than 50% of documents
+    dtm = DocumentTermMatrix(docs, control = list(bounds = list(global = c(limit.inf, limit.sup))));
+    # dtm = DocumentTermMatrix(docs);    
     rownames(dtm) = filenames;
+    rowTotals = apply(dtm, 1, sum) 
+    dtm = dtm[rowTotals > 0, ] #remove documents with no terms
     freq = colSums(as.matrix(dtm));
     freq = freq[order(freq, decreasing = TRUE)];
     
@@ -76,17 +107,13 @@ extract.topic.terms = function(term.matrix, qt.topics = 5, qt.terms = 5, seed.va
   
   ldaOut.terms = as.matrix(terms(ldaOut, qt.terms))
   # View(ldaOut.terms)
-  
-  topicProbabilities = as.data.frame(ldaOut@gamma)
-  # View(topicProbabilities)
-  
+
   doc.terms = NULL;
   names = rownames(ldaOut.topics);
   
   for(i in 1:nrow(ldaOut.topics))
   {
     column  = ldaOut.topics[i, 1];
-    # new_row = c(name = basename(names[i]), as.list(ldaOut.terms[, column]), TOPIC = paste("TOPIC", column, sep = ""));
     col.desc = stringi::stri_pad_left(as.character(column), nchar(as.character(qt.topics)), pad = "0")
     new_row = c(basename(names[i]), as.list(ldaOut.terms[, column]), paste("TOPIC", col.desc, sep = ""));    
     names(new_row) = c("name", paste("t", seq(1, qt.terms), sep = ""), "TOPIC");
@@ -143,54 +170,25 @@ tfidf = function(data)
   return(tf);  
 }
 
-get.tree.topic.new = function(tree, topics, qt.topics = 5)
+get.tree.terms.new = function(tree, topics, qt.topics = 5)
 {
   tree.terms  = topics[which(topics$name %in% get.tree.names(tree)), -1]
   tree.topics = tree.terms[, "TOPIC"]
-  topic.words = c()  
+  topic.terms = c()  
   
   if(length(tree.topics) > 0)
   {
     index.topic = which(colnames(tree.terms) == "TOPIC")
     
-    topic.words = table(tree.topics);
-    topic.words = which.max(topic.words)
-    topic.words = names(topic.words)
-    topic.words = which(tree.terms[, "TOPIC"] == topic.words)
-    topic.words = tree.terms[topic.words[1], -index.topic]
-    topic.words = as.vector(unlist(topic.words))
+    topic.terms = table(tree.topics);
+    topic.terms = which.max(topic.terms)
+    topic.terms = names(topic.terms)
+    topic.terms = which(tree.terms[, "TOPIC"] == topic.terms)
+    topic.terms = tree.terms[topic.terms[1], -index.topic]
+    topic.terms = as.vector(unlist(topic.terms))
   }
   
-  return(topic.words)
-}
-
-get.tree.topic = function(tree, topics)
-{
-  tree.topics = topics[which(topics$name %in% get.tree.names(tree)), -1]
-  topic.list  = c()
-  
-  if(nrow(tree.topics) > 0)
-  {
-    for(j in 1:ncol(tree.topics))
-    {
-      h     = sort(table(tree.topics[, j]), decreasing = TRUE);
-      topic = ""
-  
-      for(k in 1:length(h))
-      {
-        topic = names(h[k])
-        
-        if( topic %in% topic.list  )
-          topic = ""
-        else
-          break
-      }
-      
-      if(topic != "")
-        topic.list = c(topic.list, topic)
-    }
-  }
-  return(topic.list)
+  return(topic.terms)
 }
 
 extract.tree.topics.new = function(tree, text.path, topics = NULL, data = NULL, topic.as.group = TRUE)
@@ -206,32 +204,28 @@ extract.tree.topics.new = function(tree, text.path, topics = NULL, data = NULL, 
     {
       p = preprocess.text(text.path);
       topics = extract.topic.terms(p$term.matrix, qt.topics = tree$qt_cluster);
-      # topics = extract.topic.tfidf(p$term.matrix);
       write.csv(topics, path, row.names = FALSE);
     }
-    
-    # name.index = which(colnames(data) == "name");
-    # group.index = which(colnames(data) == "group");
-    # 
-    # rownames(data) = data[, name.index];
-    # data = data[ , -c(name.index, group.index)];
-    # 
-    # topics = extract.topic.tfidf(data);
-    
+
     for(i in 1:length(tree$children))
       tree$children[[i]] = extract.tree.topics.new(tree$children[[i]], text.path, topics = topics, topic.as.group = topic.as.group);    
   }else if(tree$isLeave)
   {
-    tree$topics = as.matrix(topics[which(topics$name == tree$name), -1]);
-    tree$topics = as.character(tree$topics);
+    tree$terms = as.matrix(topics[which(topics$name == tree$name), -1]);
+    tree$terms = as.character(tree$terms);
     
     if(topic.as.group)
-      tree$group  = tree$topics[length(tree$topics)]    
-    
-    tree$topics = tree$topics[-length(tree$topics)]
+    {
+      tree$group = ifelse(length(tree$terms) == 0, "ZERO TERMS", tree$terms[length(tree$terms)])
+      
+      if(length(tree$terms) == 0)
+        cat("warnning: ", tree$name, " has no topic terms\n")
+    }  
+
+    tree$terms = tree$terms[-length(tree$terms)]
   }else
   {
-    tree$topics = get.tree.topic.new(tree, topics)
+    tree$terms = get.tree.terms.new(tree, topics)
     
     for(i in 1:length(tree$children))
       tree$children[[i]] = extract.tree.topics.new(tree$children[[i]], text.path, topics = topics, topic.as.group = topic.as.group);        
@@ -273,123 +267,4 @@ get.text.words = function(data, k = 100)
 
   return(words);
 }
-
-# extract.tree.topics = function(tree, text.path)
-# {
-#   if(tree$isLeave)
-#   {
-#     p      = preprocess.text(text.path, list.file = c(paste(text.path, "/", tree$name, sep = "")));
-#     topics = extract.topic.terms(p$term.matrix);
-#     tree$topics = "";
-#     
-#     if(nrow(topics) > 0)    
-#       tree$topics = c(topics[1, -1]);
-#   }else if(tree$isRoot)
-#   {
-#     for(i in 1:length(tree$children))
-#       tree$children[[i]] = extract.tree.topics(tree$children[[i]], text.path);
-#   }else
-#   {
-#     data = NULL;
-#     
-#     for(i in 1:length(tree$children))
-#     {
-#       tree$children[[i]] = extract.tree.topics(tree$children[[i]], text.path);
-#       
-#       if(is.null(data))
-#         data = data.frame(tree$children[[i]]$topics, stringsAsFactors = FALSE)
-#       else
-#         data = rbind(data, tree$children[[i]]$topics)   
-#       
-#       tree$topics = unlist(tree$children[[i]]$topics);      
-#     }  
-#     
-#     list.topics = NULL;    
-#     
-#     for(i in 1:ncol(data))
-#     {
-#       sorted = sort(table(data[, i]), decreasing = TRUE);
-#       list.topics = c(list.topics, names(sorted[1]));
-#     }
-#     
-#     tree$topics = list.topics;      
-#   }
-#   
-#   return(tree);
-# }
-
-# abc = preprocess.text("/home/fabio/Documentos/Mestrado/Pesquisa/Hipp/www/data/teste");
-# def = extract.topic.terms(abc$term.matrix)
-# View(def)
-
-
-# filenames = list.files("/home/fabio/Documents/Pesquisa/Text", pattern = "*.txt")
-# files     = lapply(filenames, readLines)
-# docs      = Corpus(VectorSource(files))
-
-# writeLines(as.character(docs[[30]]))
-
-#remove potentially problematic symbols
-# docs = tm_map(docs, content_transformer(tolower))
-# toSpace = content_transformer(function(x, pattern) { return (gsub(pattern, " ", x))})
-# docs = tm_map(docs, toSpace, "-")
-# docs = tm_map(docs, toSpace, "'")
-# docs = tm_map(docs, toSpace, ".")
-# docs = tm_map(docs, toSpace, "'")
-# docs = tm_map(docs, toSpace, "'")
-
-
-#remove punctuation
-# docs = tm_map(docs, removePunctuation)
-#Strip digits
-# docs = tm_map(docs, removeNumbers)
-#remove stopwords
-# docs = tm_map(docs, removeWords, stopwords("english"))
-#remove whitespace
-# docs = tm_map(docs, stripWhitespace)
-#Stem document
-# docs = tm_map(docs, stemDocument)
-
-#Create document-term matrix
-# dtm = DocumentTermMatrix(docs)
-# rownames(dtm) = filenames
-# freq = colSums(as.matrix(dtm))
-
-# ord = order(freq, decreasing = TRUE)
-# freq = freq[ord]
-# write.csv(freq, "word_freq.csv")
-
-
-#Necessário instalar no Linux o pacote gsl (GNU Scientific Library)
-# require("topicmodels")
-
-# burnin <- 4000
-# iter <- 2000
-# thin <- 500
-# seed <-list(2003,5,63,100001,765)
-# nstart <- 5
-# best <- TRUE
-# k = 5
-# 
-# ldaOut <-LDA(dtm, k, method="Gibbs", control=list(nstart=nstart, seed = seed, best=best, burnin = burnin, iter = iter, thin=thin))
-
-
-# ldaOut = LDA(dtm, 5);
-# ldaOut.topics = as.matrix(topics(ldaOut))
-# View(ldaOut.topics)
-
-# ldaOut.terms = as.matrix(terms(ldaOut, 6))
-# View(ldaOut.terms)
-
-# topicProbabilities = as.data.frame(ldaOut@gamma)
-# View(topicProbabilities)
-
-# topic1ToTopic2 = lapply(1:nrow(dtm), function(x) sort(topicProbabilities[x,])[k] / sort(topicProbabilities[x, ])[k - 1])
-# topic2ToTopic3 = lapply(1:nrow(dtm),function(x) sort(topicProbabilities[x,])[k - 1]/sort(topicProbabilities[x, ])[k - 2])
-
-
-
-
-
-
 

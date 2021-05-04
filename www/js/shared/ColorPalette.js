@@ -2,6 +2,8 @@
 //  http://linkbroker.hu/stuff/kolorwheel.js/
 //  https://bgrins.github.io/spectrum/#methods-show
 //
+//Changed: 12/19/2020
+//         Removed alfa hexa values from default_palette
 //Changed: 06/04/2020
 //         Fixed, load funciton was changing data parameter
 //Changed: 02/20/2020
@@ -177,10 +179,10 @@ var ColorPalette = function()
   var _this = this;
 
   //From Nutrient Explorer http://bl.ocks.org/syntagmatic/raw/3150059/
-  this.default_palette = ["#95326CFF","#BFBFBFFF","#94DAE1FF","#C29B93FF","#9367BCFF","#E2DD92FF","#FF7C0AFF","#E6B751FF",
-                          "#F1F146FF","#FFBA75FF","#E274C1FF","#C4AFD4FF","#BA6940FF","#F7B6D2FF","#17BFCFFF","#8B564BFF",
-                          "#C83266FF","#D3272AFF","#1F77B2FF","#FF9694FF","#9BD9E4FF","#95DE87FF","#ACC6E7FF","#E699B4FF",
-                          "#2D9F2DFF"];
+  this.default_palette = ["#95326C","#BFBFBF","#94DAE1","#C29B93","#9367BC","#E2DD92","#FF7C0A","#E6B751",
+                          "#F1F146","#FFBA75","#E274C1","#C4AFD4","#BA6940","#F7B6D2","#17BFCF","#8B564B",
+                          "#C83266","#D3272A","#1F77B2","#FF9694","#9BD9E4","#95DE87","#ACC6E7","#E699B4",
+                          "#2D9F2D"];
   this.default_color = 0;                          
   this.colors = {};
   this.selected_start   = "#FF0000";
@@ -337,14 +339,14 @@ var ColorPalette = function()
   {
     switch(_this.selected_option)
     {
-      case "gray"   : return {start: "#F2F2F2FF", finish: "#333333FF"}; //(white-gray, black)
-      case "igray"  : return {start: "#333333FF", finish: "#F2F2F2FF"}; //(black, white-gray)   
-      case "heat1"  : return {start: "#E6E31AFF", finish: "#E61919FF"}; //(yellow, red)
-      case "iheat1" : return {start: "#E61919FF", finish: "#E6E31AFF"}; //(red, yellow) 
-      case "heat2" : return {start: "#f8f208ff", finish: "#500000FF"};   //(yellow, brown)
-      case "iheat2"  : return {start: "#500000FF", finish: "#E6E31AFF"}; //(brown, yellow)      
-      case "terrain": return {start: "#F2F2F2FF", finish: "#109610FF"};   //(gray, green)
-      case "iterrain" : return {start: "#109610FF" , finish: "#F2F2F2FF"}; //(green, gray)      
+      case "gray"   : return {start: "#F2F2F2", finish: "#333333"}; //(white-gray, black)
+      case "igray"  : return {start: "#333333", finish: "#F2F2F2"}; //(black, white-gray)   
+      case "heat1"  : return {start: "#E6E31A", finish: "#E61919"}; //(yellow, red)
+      case "iheat1" : return {start: "#E61919", finish: "#E6E31A"}; //(red, yellow) 
+      case "heat2" : return {start: "#F8F208", finish: "#500000"};   //(yellow, brown)
+      case "iheat2"  : return {start: "#500000", finish: "#E6E31A"}; //(brown, yellow)      
+      case "terrain": return {start: "#F2F2F2", finish: "#109610"};   //(gray, green)
+      case "iterrain" : return {start: "#109610" , finish: "#F2F2F2"}; //(green, gray)      
       case "custom"   :  return {start: _this.selected_start, finish: _this.selected_finish};
       default: return {start: "", finish: ""};  
     }

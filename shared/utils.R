@@ -4,12 +4,12 @@
 #Created: 10/04/2017
 #================================================================================#
 
-get.numeric.columns = function(dataset, name.group = NULL)
+get.numeric.columns <- function(dataset, name.group = NULL)
 {
   if(!is.null(dataset))
   {
     dataset = data.frame(dataset);    
-
+    
     columns = sapply(dataset, function(col)
     {
       return(is.numeric(col));
@@ -28,7 +28,7 @@ get.numeric.columns = function(dataset, name.group = NULL)
   }
 }
 
-norm.stand = function(dataset, type)
+norm.stand <- function(dataset, type)
 {
   if(class(dataset) != "data.frame" & class(dataset) != "matrix")
     dataset = matrix(dataset);
@@ -75,7 +75,7 @@ norm.stand = function(dataset, type)
       
       if(MIN < 0)
         values = values - MIN
-
+      
       MAX = max(values);
       MIN = min(values);
       
@@ -84,10 +84,10 @@ norm.stand = function(dataset, type)
     }  
   }else if(type == "vecnorm")
   {  
-    for(i in columns)
+    for(i in 1:nrow(dataset))
     {
-      dataset[, i] = dataset[, i] / sqrt(sum(dataset[, i]**2))
-    }      
+      dataset[i, ] = dataset[i, columns] / sqrt(sum(dataset[i, columns]**2))
+    }          
   }else if(type == "zscore")
   {
     for(i in columns)

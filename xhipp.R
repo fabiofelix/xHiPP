@@ -215,7 +215,8 @@ table2tree = function(dataset, name.group)
 
 get.index = function(node)
 {
-  return(sapply(node$children, function(kid){ kid$row_index; }, simplify = "array"));
+  indices = sapply(node$children, function(kid){ kid$row_index; }, simplify = "array")
+  return(indices[order(indices)]);
 }
 
 get.data.center = function(node, dataset, name.group)
@@ -295,14 +296,18 @@ tree2table = function(tree, dataset = NULL, by.data = FALSE)
     return(dataset);
 }
 
-split = function(node, dataset, cluster.algorithm, qt_cluster,  name.group, init.coord = FALSE, original.data = NULL, summary.path = "")
+split = function(node, dataset, cluster.algorithm, qt_cluster,  name.group, init.coord = FALSE, original.data = NULL)
 {
   if(qt_cluster <= 0)
   {
     # qt_cluster = floor(sqrt(node$qt_instances)); #Regra da raiz
     qt_cluster = floor(1 + 3.3 * log10(node$qt_instances)); #Regra de Sturges
-  }  
+    
+    cat("Splitting THIS node in", qt_cluster, "groups (sturges rule)\n")
+  }else
+    cat("Splitting ALL nodes in", qt_cluster, "groups (user value)\n")
   
+
   node$qt_cluster = qt_cluster;    
   
   if(qt_cluster > 1)
@@ -361,17 +366,15 @@ save.summary = function(tree, dataset, name.group, summary.path, original.data)
   
   if(PROCESSING.TYPE == process.types$ordinary)
   {
-    dataset = norm.stand(dataset, "minmax")
-    list.columns = get.numeric.columns(dataset, name.group);
-
+    # browser();
+    
     if(!is.null(original.data))
-    {
-      list.columns  = get.numeric.columns(original.data, name.group);
-      dataset = norm.stand(original.data, "minmax");
-    }    
-    
-    dataset = dataset[get.index(tree), ]
-    
+      dataset = original.data;
+
+    data.nrow = nrow(dataset)
+    list.columns = get.numeric.columns(dataset, name.group);    
+    dataset = dataset[get.index(tree), ]    
+
     if(nrow(dataset) == 1)
       dataset = rbind(dataset, dataset[1, ])
     if(ncol(dataset) == 1)
@@ -395,13 +398,13 @@ save.summary = function(tree, dataset, name.group, summary.path, original.data)
     
     list.names = list.files(summary.path, pattern = paste("group_summary[[:digit:]_]*.png", sep = "") )
     count = "1";
-    
+
     if(length(list.names) > 0)
     {
       list.names = list.names[sort(order(list.names))];
       file.name  = tools::file_path_sans_ext(list.names[length(list.names)]);
       file.name  = unlist(strsplit(file.name, "group_summary"));
-      
+
       if(length(file.name) > 1)
       {
         count = file.name[length(file.name)];
@@ -409,13 +412,13 @@ save.summary = function(tree, dataset, name.group, summary.path, original.data)
         count = as.character(ifelse(is.na(count), 2, count + 1));
       }
     }
-    
-    file.name = paste("group_summary", stringr::str_pad(count, 3, side = "left", pad = "0"), ".png", sep = "")
+
+    file.name = paste("group_summary", stringr::str_pad(count, nchar(as.character(data.nrow)), side = "left", pad = "0"), ".png", sep = "")
 
     png(adjust.path(file.path(summary.path, file.name)), width = 830, height = 768);
-    heatmap(as.matrix(dataset[, list.columns]), scale = "none", 
-            Rowv = NA, Colv = NA, 
-            labRow = "", labCol = "", 
+    heatmap(as.matrix(dataset[, list.columns]), scale = "none",
+            Rowv = NA, Colv = NA,
+            labRow = "", labCol = "",
             margins = c(0.5, 0), RowSideColors = colors);
     dev.off();
   }  
@@ -426,11 +429,11 @@ save.summary = function(tree, dataset, name.group, summary.path, original.data)
 hierarchy = function(tree, dataset, qt_cluster, min.item, cluster.algorithm, name.group, parallel, init.coord = FALSE, original.data = NULL, summary.path = "")
 {
   if(!tree$isRoot)
-    tree$summary = save.summary(tree, dataset, name.group, summary.path, original.data);  
-  
+    tree$summary = save.summary(tree, dataset, name.group, summary.path, original.data);
+
   if(!is.null(tree) && !is.null(dataset) && length(tree$children) > min.item)
   {
-    tree = split(tree, dataset, cluster.algorithm, qt_cluster, name.group, init.coord, original.data, summary.path);
+    tree = split(tree, dataset, cluster.algorithm, qt_cluster, name.group, init.coord, original.data);
     
     `%myinfix%` <- ifelse(parallel, `%dopar%`, `%do%`)
     
@@ -783,7 +786,7 @@ xHiPP = function(data, operation, cluster.algorithm = "kmeans", projection.algor
   
   if(file.exists(summary.path))
     do.call(file.remove, list(list.files(summary.path, full.names = TRUE)))
-  
+
   if(operation == "cluster_projection")
     tree = xHiPP_cluster_projection(data, 
                                    qt_cluster = qt_cluster,

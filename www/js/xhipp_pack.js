@@ -5,7 +5,7 @@ var xHiPP_pack = function()
   {
     tree.r = 10;
     tree.x = (tree.data.x - summary.min_x) * (Xf / ( summary.max_x - summary.min_x));
-    //Além de colocar a coordenada y entre 0 e Yf, também inverte os valores por causa da localização do ponto (0, 0) na tela
+    //Alï¿½m de colocar a coordenada y entre 0 e Yf, tambï¿½m inverte os valores por causa da localizaï¿½ï¿½o do ponto (0, 0) na tela
     tree.y = Yf + (tree.data.y - summary.min_y) * ( -Yf / ( summary.max_y - summary.min_y ) );
     
     if(tree.children)
@@ -31,7 +31,7 @@ var xHiPP_pack = function()
     var threshold = parseFloat($("#threshold").val());
     var frac      = parseFloat($("#frac").val());  
   //   var max       = 20;
-  //   var threshold = 1.5;   //se os nós não possuirem interseção mas estiverem muito próximos faz com que sejam minimamente afastados
+  //   var threshold = 1.5;   //se os nï¿½s nï¿½o possuirem interseï¿½ï¿½o mas estiverem muito prï¿½ximos faz com que sejam minimamente afastados
   //   var frac      = 4.0;   //4 <= frac <= 8. Quanto menor mais espelhados os pontos ficam
     
     do
@@ -103,7 +103,7 @@ function _pack(tree, original_limites, Xf, Yf)
 {
   tree.r = 10;
   tree.x = (tree.data.x - original_limites.min_x) * (Xf / ( original_limites.max_x - original_limites.min_x));
-  //Além de colocar a coordenada y entre 0 e Yf, também inverte os valores por causa da localização do ponto (0, 0) na tela
+  //Alï¿½m de colocar a coordenada y entre 0 e Yf, tambï¿½m inverte os valores por causa da localizaï¿½ï¿½o do ponto (0, 0) na tela
   tree.y = Yf + (tree.data.y - original_limites.min_y) * ( -Yf / ( original_limites.max_y - original_limites.min_y ) );
   
   if(tree.children)
@@ -150,7 +150,7 @@ function spreader(tree)
   var threshold = parseFloat($("#threshold").val());
   var frac      = parseFloat($("#frac").val());  
 //   var max       = 20;
-//   var threshold = 1.5;   //se os nós não possuirem interseção mas estiverem muito próximos faz com que sejam minimamente afastados
+//   var threshold = 1.5;   //se os nï¿½s nï¿½o possuirem interseï¿½ï¿½o mas estiverem muito prï¿½ximos faz com que sejam minimamente afastados
 //   var frac      = 4.0;   //4 <= frac <= 8. Quanto menor mais espelhados os pontos ficam
   
   do

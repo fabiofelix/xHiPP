@@ -6,15 +6,15 @@
 
 require(cluster) 
 
-stress = function(X, Y)  
+stress <- function(X, Y)  
 {
   if(is.null(X) || is.na(X) || is.null(Y) || is.na(Y) )
   {
-    stop("matrizes nao informadas");
+    stop("matrices not found");
   }  
   if(nrow(X) != nrow(Y))
   {
-    stop("quantidade de linhas das matrizes difere");
+    stop("matrices X and Y with differente line number");
   }
   
   dist_x  = as.matrix(dist(X));
@@ -32,7 +32,7 @@ stress = function(X, Y)
   return(sqrt(sum_dif_xy / sum_dist_x));
 }
 
-neighborhood.aux = function(row, index, k, class = NULL)
+neighborhood.aux <- function(row, index, k, class = NULL)
 {
   row        = sort(row, index.return = TRUE);
   list_index = row$ix[-which(row$ix == index)];
@@ -44,7 +44,7 @@ neighborhood.aux = function(row, index, k, class = NULL)
     return(length(which(class[list_index] == class[index])));
 }
 
-neighborhood.hit = function(projected, class, k = floor(sqrt(nrow(projected))))
+neighborhood.hit <- function(projected, class, k = floor(sqrt(nrow(projected))))
 {
   if(is.null(projected) || is.na(projected))
     stop("projected matrix not found");
@@ -64,7 +64,7 @@ neighborhood.hit = function(projected, class, k = floor(sqrt(nrow(projected))))
   return(sum / (k * nrow(projected)) );
 }
 
-neighborhood.preservation = function(original, projected, k = floor(sqrt(nrow(original))))
+neighborhood.preservation <- function(original, projected, k = floor(sqrt(nrow(original))))
 {
   if(is.null(original) || is.na(original))
     stop("original matrix not found");
@@ -88,8 +88,11 @@ neighborhood.preservation = function(original, projected, k = floor(sqrt(nrow(or
   return(Sum / nrow(original)); 
 }
 
-calc.metrics = function(dataset, data.projection, projection.name, labels, calc = list(stress=TRUE, Silhouette=TRUE, nhit=TRUE, npreservation=TRUE, distance=TRUE), verbose = TRUE, qt_cluster = NULL)
+calc.metrics <- function(dataset, data.projection, projection.name, labels, calc = list(stress=TRUE, Silhouette=TRUE, nhit=TRUE, npreservation=TRUE, distance=TRUE), verbose = TRUE, qt_cluster = NULL)
 { 
+  if(!is.factor(labels))
+    labels = as.factor(labels)
+  
   stress.value = 0;
   np.value = 0;
   
@@ -100,26 +103,26 @@ calc.metrics = function(dataset, data.projection, projection.name, labels, calc 
     
     stress.value = stress(dataset, data.projection);
   }
-
+  
   if(calc$npreservation)
   {
     if(verbose)
       cat("   |- Calculating ", projection.name, " Neighborhood Preservation\n", sep = "")
-  
+    
     np.value = neighborhood.preservation(dataset, data.projection, k = qt_cluster);
   }
-
+  
   silhouette.value = NULL;
   silhouette.avg   = NULL;
   nh.value         = 0;
-
+  
   if(length(labels) > 1 && length(unique(labels)) > 1)
   {
     if(calc$Silhouette)
     {
       if(verbose)
         cat("   |- Calculating ", projection.name, " Silhouete\n", sep = "")
-  
+      
       dist_vis         = dist(data.projection);
       silhouette.value = silhouette(as.numeric(labels), dist_vis);
       silhouette.avg   = summary(silhouette.value)$avg.width;
@@ -128,7 +131,7 @@ calc.metrics = function(dataset, data.projection, projection.name, labels, calc 
     {
       if(verbose)
         cat("   |- Calculating ", projection.name, " Neighborhood Hit\n", sep = "")
-  
+      
       nh.value = neighborhood.hit(data.projection, labels, k = qt_cluster);
     }
   }

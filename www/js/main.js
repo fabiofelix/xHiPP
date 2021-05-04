@@ -15,7 +15,7 @@ $(document).ready(
     $(document).on("click", "#normal", VIS.packed.add_circles); 
     $(document).on("click", "#medoid", VIS.packed.show_img_medoid);
     $(document).on("click", "#cluster2csv", VIS.packed.cluster2csv);        
-    
+    // $(document).on("click", "#savesvg", VIS.packed.savesvg);        
     
     $("#userFile").fileinput({
         showPreview: false, 
@@ -109,8 +109,6 @@ function call_back(error, data)
         data = data[0];
     }      
     
-    if(data.seed_value > 0)
-      $("#seed").val(data.seed_value);
     if(data.threshold !== undefined)
       $("#threshold").val(data.threshold);
     if(data.frac !== undefined)
@@ -182,6 +180,8 @@ var Vis = function()
       }
     );
     
+    groups.sort();
+
     _this.palette.load(groups);  
     
     $("#label-tooltip .tooltip-inner").html("");
