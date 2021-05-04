@@ -61,7 +61,7 @@ In my tests, ~5.000 items and ~500 features were the higher limits. As well as, 
 > xHiPP will extract topics for text datasets. Thus, the processing time is influenciated by this process. Fortunately, the process is executed just 
 one time for each text dataset.
 
-### File format (csv)
+### File format for input (csv)
 
 It is possible to load .csv files. Files must contain a column named as **name** (identification column) and a column named as **group** (data labels). If data are not labeled,
 all items in column **group** should have the same value. Column **group** accept any value type (integer, string, etc.)
@@ -84,20 +84,26 @@ frequency. Please, rename these columns to xHiPP correctly encounter columns **n
 | ----- | ----- | ----- | ------ | ----- | ----- | ------- | ----- | ----- |
 | file1.txt | 0.3 | 0.5 | 0.4 | 0.2 | 0.1 | 0 | 0 | news |
 
-
-### File format (json)
+### File format for input (json)
 
 When a .csv file is processed, xHiPP save a .json with the tree structure in *www/data/json* to future use. Therefore, user can load preprocessed structures with xHiPP.
 For instance, if one wants to change palette color, just change colors and load preprocessed file (json), instead of reprocessing entire dataset (csv).
+
+### File format for stopwords (spw)
+
+xHiPP preprocess .txt files inside *www/data/text* and remove **stopwords** from them. 
+Users can define their own stopwords list, creating text files  (with extension .spw) that have one stopword per line and storing those files inside *shared/stopwords/*.
 
 ### Directory structure
 
 Files specified in column **name** of the .csv will be searched inside *www/data* in the subdirectories audio, img or text. 
 
-Audio files will be presented with respective spectrograms whether the audio and the corresponded image stay in the audio directory (e.g. sound.mp3 and sound.png are inside *www/data/audio*). 
+Audio recordings will be presented with respective spectrograms whether the audio and the corresponded image stay in the audio directory (e.g. sound.mp3 and sound.png are inside *www/data/audio*). 
 If just one of them (audio or image) is inside the directory, it will be presented to the user.
 
 > obs.: Browsers such as Firefox and Google Chrome can play only audios in PCM at 8 or 16 bits per sample.
+
+Texts will be fully presented if they were available in .txt files inside the proper directory (e.g. news1.txt is inside *www/data/text*).
 
 ### Data presentation
 
