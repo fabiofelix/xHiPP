@@ -447,7 +447,7 @@ var ViewData = function()
     else if(_this.isText(path))
       return _this.text_path + path;      
     else if(_this.isAudio(path))
-      return _this.audio_path + _this;
+      return _this.audio_path + _this.extractImageAudio(path);
     else
       return "";
   };
