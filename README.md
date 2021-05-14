@@ -51,7 +51,7 @@ RUN_SERVER and RUN_CLIENT. It is good to copy these files to another place, beca
 
 ## Running
 
-First and foremost, execute the RUN_SERVER script and wait until **Listening on \<address\>** mesage appears on the prompt. After this, execute RUN_CLIENT to open your web browser with the xHiPP main view.
+First and foremost, execute the RUN_SERVER script and wait until **Listening on \<address\>** mesage appears on the prompt. After that, execute RUN_CLIENT to open your web browser with the xHiPP main view.
 
 After starting, one can load data, interacts with groups on the left side and with treemap on the right side by zooming in and out the structure. Moreover, there are options to show groups summarization, present transparent groups or points without groups, to save items from a group focused and to visualize data related to points.
 
@@ -111,7 +111,7 @@ When a user clicks on data points:
 
 * Texts are presented for reading;
 * Images are presented and a user can use arrow keys from keyboard to navigate in other group images. Just images from the current group focused are shown;
-* Audio is presented in a player with basic functions (forward, play/pause, backward) and equalizer controls. Beyond that, mouse hover on audio track shows time,
+* Audio is presented in a player with basic functions (forward, play/pause, backward) and equalizer controls. Furthermore, mouse hover on audio track shows time,
 a mouse click can forward, and backward. 
 Track can not fit in spectrogram image width, depending on the dimensions of the image.
 To dial with it, the audio track can be resized and repositioned with mouse click and drag;
